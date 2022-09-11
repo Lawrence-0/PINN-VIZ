@@ -1,0 +1,30 @@
+ERROR:app:Exception on /server4 [POST]
+Traceback (most recent call last):
+  File "D:\anaconda\envs\tensorflow1GPU\lib\site-packages\flask\app.py", line 2073, in wsgi_app
+    response = self.full_dispatch_request()
+  File "D:\anaconda\envs\tensorflow1GPU\lib\site-packages\flask\app.py", line 1518, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "D:\anaconda\envs\tensorflow1GPU\lib\site-packages\flask\app.py", line 1516, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "D:\anaconda\envs\tensorflow1GPU\lib\site-packages\flask\app.py", line 1502, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**req.view_args)
+  File "A:\DESKTOP\project\app.py", line 67, in server4
+    new_model.summary()
+  File "D:\anaconda\envs\tensorflow1GPU\lib\site-packages\tensorflow_core\python\keras\engine\network.py", line 1453, in summary
+    raise ValueError('This model has not yet been built. '
+ValueError: This model has not yet been built. Build the model first by calling `build()` or calling `fit()` with some data, or specify an `input_shape` argument in the first layer(s) for automatic build.
+ERROR:app:Exception on /server4 [POST]
+Traceback (most recent call last):
+  File "D:\anaconda\envs\tensorflow1GPU\lib\site-packages\flask\app.py", line 2073, in wsgi_app
+    response = self.full_dispatch_request()
+  File "D:\anaconda\envs\tensorflow1GPU\lib\site-packages\flask\app.py", line 1518, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "D:\anaconda\envs\tensorflow1GPU\lib\site-packages\flask\app.py", line 1516, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "D:\anaconda\envs\tensorflow1GPU\lib\site-packages\flask\app.py", line 1502, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**req.view_args)
+  File "A:\DESKTOP\project\app.py", line 67, in server4
+    new_model.summary()
+  File "D:\anaconda\envs\tensorflow1GPU\lib\site-packages\tensorflow_core\python\keras\engine\network.py", line 1453, in summary
+    raise ValueError('This model has not yet been built. '
+ValueError: This model has not yet been built. Build the model first by calling `build()` or calling `fit()` with some data, or specify an `input_shape` argument in the first layer(s) for automatic build.

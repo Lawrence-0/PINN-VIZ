@@ -1,0 +1,813 @@
+.part_outside {
+    position: absolute;
+    right: 0;
+    left: 0;
+    background-color: #ffffff;
+    border-top-style: solid;
+    border-right-style: solid;
+    border-left-style: solid;
+    border-width: 8px;
+    border-color: #555590;
+}
+.part_title {
+    position: absolute;
+    height: 30px;
+    top: 0;
+    right: 0;
+    left: 0;
+    background-color: #555590;
+    border: solid;
+    border-width: 3px;
+    border-color: #ffffff;
+    text-align: center;
+    color:white;
+    font-size: 20px;
+}
+.module_inside {
+    position: absolute;
+    background-color: #ffffff;
+    border: solid;
+    border-width: 3px;
+    border-color: #555590;
+    top: 1.5px;
+    right: 1.5px;
+    bottom: 1.5px;
+    left: 1.5px;
+}
+.control_1_block {
+    position: absolute;
+    height: 32%;
+    width: 100%;
+}
+.control_1_subblock1 {
+    position: absolute;
+    height: 50%;
+    width: 100%;
+    top:0;
+}
+.control_1_subblock2 {
+    position: absolute;
+    height: 50%;
+    width: 100%;
+    top: 50%;
+    overflow-x: scroll;
+    white-space: nowrap;
+}
+.elems {
+    width: 80px;
+    height: 25px;
+    font-size: 13px;
+    border-style:ridge;
+    border-width:3px;
+    border-color: #555590;
+    text-align:center;
+    line-height:25px;
+    margin-left: 2px;
+    margin-right: 2px;
+    display: inline-block;
+    white-space: nowrap;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+.control_2_subblock_1 {
+    position: absolute;
+    width: 100%;
+    height: 32%;
+}
+.control_2_subblock_1_btn {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+}
+.sht_elems {
+    width: 25px;
+    height: 25px;
+    font-size: 13px;
+    border-style:ridge;
+    border-width:3px;
+    border-color: #555590;
+    text-align:center;
+    line-height:25px;
+    margin-left: 2px;
+    margin-right: 2px;
+    display: inline-block;
+    white-space: nowrap;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+.equ_div {
+    overflow-x: scroll;
+    height: 65px;
+    width: 80%;
+    float: left;
+}
+.equ_div_w {
+    height: 65px;
+    width: 20%;
+    float: right;
+    text-align: center;
+    text-align-last: center;
+}
+.exa_sol_btn {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+}
+.layer_ {
+    width: 120px;
+    display: inline-block;
+    white-space: nowrap;
+    text-align: center;
+    text-align-last: center;
+}
+
+
+#control_part {
+    top: 0;
+    bottom: 70%;
+}
+#overview_part {
+    top: 30%;
+    bottom: 40%;
+}
+#detail_part {
+    top: 60%;
+    bottom: 0;
+    border-bottom-style: solid;
+}
+#control_1 {
+    position: absolute;
+    top: 34.5px;
+    right: 80%;
+    bottom: 1.5px;
+    left: 1.5px;
+}
+#control_2 {
+    position: absolute;
+    top: 34.5px;
+    right: 65%;
+    bottom: 1.5px;
+    left: 20%;
+}
+#control_3 {
+    position: absolute;
+    top: 34.5px;
+    right: 50%;
+    bottom: 1.5px;
+    left: 35%;
+}
+#control_4 {
+    position: absolute;
+    top: 34.5px;
+    right: 35%;
+    bottom: 1.5px;
+    left: 50%;
+}
+#control_5 {
+    position: absolute;
+    top: 34.5px;
+    right: 15%;
+    bottom: 1.5px;
+    left: 65%;
+}
+#control_6 {
+    position: absolute;
+    top: 34.5px;
+    right: 1.5px;
+    bottom: 1.5px;
+    left: 85%;
+}
+#overview_0 {
+    position: absolute;
+    top: 34.5px;
+    right: 85%;
+    bottom: 1.5px;
+    left: 1.5px;
+}
+#overview_1 {
+    position: absolute;
+    top: 34.5px;
+    right: 50%;
+    bottom: 1.5px;
+    left: 15%;
+}
+#overview_2 {
+    position: absolute;
+    top: 34.5px;
+    right: 35%;
+    bottom: 1.5px;
+    left: 50%;
+}
+#overview_3 {
+    position: absolute;
+    top: 34.5px;
+    right: 1.5px;
+    bottom: 1.5px;
+    left: 65%;
+}
+#detail_1 {
+    position: absolute;
+    height: 30px;
+    right: 40%;
+    bottom: 1.5px;
+    left: 1.5px;
+}
+#detail_2 {
+    position: absolute;
+    top: 34.5px;
+    right: 70%;
+    bottom: 31.5px;
+    left: 1.5px;
+}
+#detail_3 {
+    position: absolute;
+    top: 34.5px;
+    right: 40%;
+    bottom: 31.5px;
+    left: 30%;
+}
+#detail_4 {
+    position: absolute;
+    top: 34.5px;
+    right: 1.5px;
+    bottom: 1.5px;
+    left: 60%;
+}
+#control_1_block_1 {
+    top:0;
+}
+#control_1_block_2 {
+    top:34%;
+}
+#control_1_block_3 {
+    top:68%;
+}
+#select_PDE_input {
+    position: absolute;
+    width: 70%;
+    right: 15%;
+    top: 50%;
+    transform: translate(0, -49%);
+    text-align: center;
+    text-align-last: center;
+}
+#select_PDE_output_label {
+    position: absolute;
+    font-size: 14px;
+    left: 50%;
+    top: 50%;
+    transform: translate(-130px, -50%);
+}
+#select_PDE_output {
+    position: absolute;
+    width: 30px;
+    left: 50%;
+    top: 50%;
+    transform: translate(80px, -50%);
+    text-align: center;
+    text-align-last: center;
+}
+#select_PDE_parameter_label {
+    position: absolute;
+    font-size: 14px;
+    left: 50%;
+    top: 50%;
+    transform: translate(-100px, -50%);
+}
+#select_PDE_parameter {
+    position: absolute;
+    width: 30px;
+    left: 50%;
+    top: 50%;
+    transform: translate(60px, -50%);
+    text-align: center;
+    text-align-last: center;
+}
+#control_2_block_1 {
+    position: absolute;
+    height: 100px;
+    width: 80px;
+}
+#control_2_block_2 {
+    position: absolute;
+    height: 100px;
+    top: 0;
+    left: 85px;
+    right: 0;
+}
+#control_2_block_3 {
+    position: absolute;
+    width: 100%;
+    top: 105px;
+    left: 0;
+    bottom: 0;
+    right: 0;
+}
+#control_2_subblock_11 {
+    top: 0;
+}
+#control_2_subblock_12 {
+    top: 34%;
+}
+#control_2_subblock_13 {
+    top: 68%;
+}
+#control_2_subblock_21 {
+    position: absolute;
+    width: 100%;
+    height: 20px;
+}
+#control_2_subblock_22 {
+    position: absolute;
+    width: 100%;
+    top: 20px;
+    bottom: 0;
+}
+#select_csv_show {
+    position: absolute;
+    width: 100%;
+    text-align: center;
+    text-align-last: center;
+}
+#control_3_block_1 {
+    top:0;
+}
+#control_3_subblock_1 {
+    position: absolute;
+    left: 0;
+    right: 25px;
+    top: 50%;
+    transform: translate(0,-50%);
+    font-size: 14px;
+    text-align: center;
+    text-align-last: center;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+#derivative_add {
+    position: absolute;
+    width: 25px;
+    top: 50%;
+    right: 0;
+    transform: translate(0,-100%);
+}
+#derivative_sub {
+    position: absolute;
+    width: 25px;
+    top: 50%;
+    right: 0;
+}
+#control_3_block_2 {
+    position: absolute;
+    height: 68%;
+    width: 100%;
+    top:32%;
+    overflow-y: scroll;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+#control_4_block_1 {
+    height: 16%;
+    top: 3%;
+}
+#control_4_block_2 {
+    height: 16%;
+    top: 22%;
+}
+#control_4_block_3 {
+    height: 16%;
+    top: 41%;
+}
+#control_4_block_4 {
+    height: 16%;
+    top: 60%;
+}
+#control_4_block_5 {
+    position: absolute;
+    width: 100%;
+    height: 24%;
+    top: 76%;
+}
+#control_4_subblock_51 {
+    position: absolute;
+    left: 0;
+    right: 25px;
+    top: 50%;
+    transform: translate(0,-50%);
+    font-size: 14px;
+    text-align: center;
+    text-align-last: center;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+#equation_add {
+    position: absolute;
+    width: 25px;
+    top: 50%;
+    right: 0;
+    transform: translate(0,-100%);
+}
+#equation_sub {
+    position: absolute;
+    width: 25px;
+    top: 50%;
+    right: 0;
+}
+#new_equation {
+    font-size: 13px;
+    transform: translate(0,1px);
+    width: 80%;
+}
+#terminal_view {
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 15px;
+    right: 0;
+    background-color: black;
+    font-size:x-small;
+    font-family: 'Courier New', Courier, monospace;
+    color:#ffffff;
+    padding: 2%;
+    overflow-y: scroll;
+    white-space: pre-line;
+    overflow-x: hidden;
+    display: none;
+}
+#terminal_switch {
+    position: absolute;
+    width: 60px;
+    height: 15px;
+    bottom: 0;
+    left: 0;
+    font-size: 12px;
+    text-align: center;
+    text-align-last: center;
+    background-color: rgb(0, 255, 255);
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+#terminal_bttm {
+    position: absolute;
+    height: 15px;
+    right: 60px;
+    bottom: 0;
+    left: 60px;
+    font-size: 12px;
+    text-align: center;
+    text-align-last: center;
+    background-color: rgb(0, 145, 145);
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    display: none;
+}
+#terminal_pause {
+    position: absolute;
+    width: 60px;
+    height: 15px;
+    right: 0;
+    bottom: 0;
+    font-size: 12px;
+    text-align: center;
+    text-align-last: center;
+    background-color: rgb(0, 225, 225);
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    display: none;
+}
+#equation_show {
+    position: absolute;
+    top: 20px;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    overflow-y: scroll;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    display: block;
+}
+#equation_title {
+    position: absolute;
+    height: 20px;
+    top: 0;
+    right: 20%;
+    left: 0;
+    font-size: 14px;
+    text-align: center;
+    text-align-last: center;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+#equation_title_w {
+    position: absolute;
+    width: 20%;
+    height: 20px;
+    top: 0;
+    right: 0;
+    font-size: 14px;
+    text-align: center;
+    text-align-last: center;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+#exa_sol_title {
+    position: absolute;
+    height: 20px;
+    top: 0;
+    right: 0;
+    left: 0;
+    font-size: 14px;
+    text-align: center;
+    text-align-last: center;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+#exa_sol_btns{
+    position: absolute;
+    height: 25px;
+    top: 20px;
+    right: 0;
+    left: 0;
+}
+#exa_sol_btns_1 {
+    position: absolute;
+    height: 100%;
+    width: 32%;
+    left: 1%;
+}
+#exa_sol_btns_2 {
+    position: absolute;
+    height: 100%;
+    width: 32%;
+    left: 34%;
+}
+#exa_sol_btns_3 {
+    position: absolute;
+    height: 100%;
+    width: 32%;
+    left: 67%;
+}
+#exa_sol_edit {
+    position: absolute;
+    top: 47px;
+    right: 0;
+    bottom: 0;
+    left: 0;
+}
+#exa_sol_editor {
+    resize: none;
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0px;
+    right: 0;
+    background-color: black;
+    font-size:x-small;
+    font-family: 'Courier New', Courier, monospace;
+    color:#ffffff;
+    padding: 2%;
+    overflow-y: scroll;
+    white-space: pre-line;
+    overflow-x: hidden;
+}
+#overview_0_block_1 {
+    position: absolute;
+    height: 20%;
+    width: 100%;
+    top: 0;
+}
+#overview_0_subblock_11 {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 50%;
+    transform: translate(0,-50%);
+    font-size: 14px;
+    text-align: center;
+    text-align-last: center;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+#new_layer_num {
+    width: 70px;
+    transform: translate(0,-1px);
+}
+#new_layer_add {
+    width: 25px;
+    transform: translate(0,-1px);
+}
+#new_layer_sub {
+    width: 25px;
+    transform: translate(0,-1px);
+}
+#layers_span {
+    font-family: 'Courier New', Courier, monospace;
+    border: double 3px #000000;
+}
+#overview_0_block_2 {
+    position: absolute;
+    height: 15%;
+    width: 50%;
+    top: 22%;
+}
+#overview_0_subblock_21 {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 50%;
+    transform: translate(0,-50%);
+    font-size: 14px;
+    text-align: center;
+    text-align-last: center;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+#epoch_num {
+    width: 70px;
+    transform: translate(0,3px);
+}
+#overview_0_block_3 {
+    position: absolute;
+    height: 15%;
+    width: 50%;
+    top: 22%;
+    left: 50%;
+}
+#overview_0_subblock_31 {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 50%;
+    transform: translate(0,-50%);
+    font-size: 14px;
+    text-align: center;
+    text-align-last: center;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+#steps_num {
+    width: 70px;
+    transform: translate(0,3px);
+}
+#overview_0_block_4 {
+    position: absolute;
+    height: 15%;
+    width: 50%;
+    top: 37%;
+}
+#overview_0_subblock_41 {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 50%;
+    transform: translate(0,-50%);
+    font-size: 14px;
+    text-align: center;
+    text-align-last: center;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+#optimizer_sel {
+    transform: translate(0,3px);
+}
+#overview_0_block_5 {
+    position: absolute;
+    height: 15%;
+    width: 50%;
+    top: 37%;
+    left: 50%;
+}
+#overview_0_subblock_51 {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 50%;
+    transform: translate(0,-50%);
+    font-size: 14px;
+    text-align: center;
+    text-align-last: center;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+#learning_rate_num {
+    width: 70px;
+    transform: translate(0,3px);
+}
+#overview_0_block_6 {
+    position: absolute;
+    height: 15%;
+    width: 100%;
+    top: 54%;
+}
+#overview_0_subblock_61 {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 50%;
+    transform: translate(0,-50%);
+    font-size: 14px;
+    text-align: center;
+    text-align-last: center;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+#overview_0_block_7 {
+    position: absolute;
+    height: 20%;
+    width: 100%;
+    top: 70%;
+}
+#overview_0_subblock_71 {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 50%;
+    transform: translate(0,-50%);
+    font-size: 14px;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    overflow-x: scroll;
+    white-space: nowrap;
+}
+#start_train {
+    position: absolute;
+    width: 100%;
+    height: 30px;
+    bottom: 0;
+}

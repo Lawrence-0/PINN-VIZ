@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<html>
+    <head>
+        <title>Dashboard</title>
+        <link rel="shortcut icon" href="static/ico/favicon.ico">
+        <link rel="stylesheet" href="static/css/style.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+        <script src="https://d3js.org/d3.v7.min.js"></script>
+        <script src="https://unpkg.com/d3-simple-slider"></script>
+        <script src="https://cdn.plot.ly/plotly-2.14.0.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+        <script src="./static/js/detail_slider.js?r={{reload}}"></script>
+        <script src="./static/js/network_structure.js?r={{reload}}"></script>
+        <script src="./static/js/loss_epoch.js?r={{reload}}"></script>
+        <script src="./static/js/parallel_line.js?r={{reload}}"></script>
+        <script src="./static/js/show_csv.js?r={{reload}}"></script>
+    </head>
+    <body>
+        <div class="part_outside" id="control_part">
+            <div class="part_title">SETTING</div>
+            <div id="control_1">
+                <div class="module_inside">
+                    <div class="control_1_block" id="control_1_block_1">
+                        <div class="control_1_subblock1">
+                            <select id="select_PDE_input">
+                                <option value ="1DoT">Time Independent One Dimensional Spatial Equations</option>
+                                <option value ="2DoT">Time Independent Two Dimensional Spatial Equations</option>
+                                <option value ="3DoT">Time Independent Three Dimensional Spatial Equations</option>
+                                <option value ="1DwT">Time Dependent One Dimensional Spatial Equations</option>
+                                <option value ="2DwT">Time Dependent Two Dimensional Spatial Equations</option>
+                                <option value ="3DwT">Time Dependent Three Dimensional Spatial Equations</option>
+                            </select>
+                        </div>
+                        <div class="control_1_subblock2" id="control_1_subblock_12">
+                            <div class="elems">InputX</div>
+                        </div>
+                    </div>
+                    <div class="control_1_block" id="control_1_block_2">
+                        <div class="control_1_subblock1">
+                            <label id="select_PDE_output_label">Number of Physical Quantities</label>
+                            <input type="number" id="select_PDE_output" value="1" min="1">
+                        </div>
+                        <div class="control_1_subblock2" id="control_1_subblock_22">
+                            <div class="elems">Output1</div>
+                        </div>
+                    </div>
+                    <div class="control_1_block" id="control_1_block_3">
+                        <div class="control_1_subblock1">
+                            <label id="select_PDE_parameter_label">Number of Parameters</label>
+                            <input type="number" id="select_PDE_parameter" value="1" min="1">
+                        </div>
+                        <div class="control_1_subblock2" id="control_1_subblock_32">
+                            <div class="elems">Parameter1</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="control_2">
+                <div class="module_inside">
+                    <div id="control_2_block_1">
+                        <form>
+                            <div class="control_2_subblock_1" id="control_2_subblock_11">
+                                <button class="control_2_subblock_1_btn" id="select_csv_" type="button" onclick="document.getElementById('select_csv').click();">Data</button>
+                                <input type="file" id="select_csv" name="select_csv" accept=".csv" style="display:none;">
+                            </div>
+                            <div class="control_2_subblock_1" id="control_2_subblock_12">
+                                <button class="control_2_subblock_1_btn" id="upload_csv" type="button">Upload</button>
+                            </div>
+                        </form>
+                        <div class="control_2_subblock_1" id="control_2_subblock_13">
+                            <button class="control_2_subblock_1_btn" id="analyze_csv" type="button">Analyze</button>
+                        </div>
+                    </div>
+                    <div id="control_2_block_2">
+                        <div id="control_2_subblock_21">
+                            <select id="select_csv_show" disabled="true"></select>
+                        </div>
+                        <div id="control_2_subblock_22"></div>
+                    </div>
+                    <div id="control_2_block_3"></div>
+                </div>
+            </div>
+            <div id="control_3">
+                <div class="module_inside">
+                    <div class="control_1_block" id="control_3_block_1">
+                        <div class="control_1_subblock1">
+                            <div id="control_3_subblock_1">
+                                <span id="derivative_0">Derivative1</span> = 
+                                <span style="display: inline-flex; flex-direction: column; vertical-align: middle; text-align: center;">
+                                    <span style="padding: 0 10px; border-bottom: 1px solid #000000;">
+                                        ∂
+                                        <select id="derivative_1" disabled="true">
+                                            <option>Output1</option>
+                                        </select>
+                                    </span>
+                                    <span style="padding: 0 10px;">
+                                        ∂
+                                        <select id="derivative_2" disabled="true">
+                                            <option>InputX</option>
+                                        </select>
+                                    </span>
+                                </span>
+                            </div>
+                            <button type="button" id="derivative_add" disabled="true">+</button>
+                            <button type="button" id="derivative_sub" disabled="true">-</button>
+                        </div>
+                        <div class="control_1_subblock2" id="control_3_subblock_12">
+                        </div>
+                    </div>
+                    <div id="control_3_block_2">
+                    </div>
+                </div>
+            </div>
+            <div id="control_4">
+                <div class="module_inside">
+                    <div class="control_1_subblock2" id="control_4_block_1">
+                        <div class="sht_elems">IX</div>
+                    </div>
+                    <div class="control_1_subblock2" id="control_4_block_2">
+                        <div class="sht_elems">O1</div>
+                    </div>
+                    <div class="control_1_subblock2" id="control_4_block_3">
+                        <div class="sht_elems">P1</div>
+                    </div>
+                    <div class="control_1_subblock2" id="control_4_block_4">
+                    </div>
+                    <div id="control_4_block_5">
+                        <div id="control_4_subblock_51">
+                            <span id="equation_name">Equation1</span><br>
+                            <span style="font-size:13px;">0 = </span>
+                            <input type="text" id="new_equation" name="new_equation" disabled="true">
+                        </div>
+                        <button type="button" id="equation_add" disabled="true">+</button>
+                        <button type="button" id="equation_sub" disabled="true">-</button>
+                    </div>
+                </div>
+            </div>
+            <div id="control_5">
+                <div class="module_inside">
+                    <div id="equation_title">PDE List</div>
+                    <div id="equation_show"></div>
+                    <div id="equation_title_w">Weight</div>
+                    <div id="terminal_switch">SWITCH</div>
+                    <div id="terminal_view"></div>
+                    <div id="terminal_bttm">BOTTOM</div>
+                    <div id="terminal_pause">▶ / ❚❚</div>
+                </div>
+            </div>
+            <div id="control_6">
+                <div class="module_inside">
+                    <div id="exa_sol_title">Exact Solution</div>
+                    <div id="exa_sol_btns">
+                        <div id="exa_sol_btns_1">
+                            <button class="exa_sol_btn" id="exa_sol_new">New File</button>
+                        </div>
+                        <div id="exa_sol_btns_2">
+                            <button class="exa_sol_btn" id="exa_sol_open">Open File</button>
+                            <input type="file" id="select_py" name="select_py" accept=".py" style="display:none;">
+                        </div>
+                        <div id="exa_sol_btns_3">
+                            <button class="exa_sol_btn" id="exa_sol_save">Save File</button>
+                        </div>
+                    </div>
+                    <div id="exa_sol_edit">
+                        <textarea id="exa_sol_editor"></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="part_outside" id="overview_part">
+            <div class="part_title">OVERVIEW</div>
+            <div id="overview_0">
+                <div class="module_inside">
+                    <div id="overview_0_block_1">
+                        <div id="overview_0_subblock_11">
+                            <span id="new_layer_title">New Hidden Layer (1):  </span>
+                            <input type="number" id="new_layer_num" value="0" min="0">
+                            <button id="new_layer_add">+</button>
+                            <button id="new_layer_sub">-</button>
+                            <br>
+                            <div style="height:38px; overflow-y: hidden; overflow-x: scroll; transform: translate(0, 7px);"><span id="layers_span">1=>1</span></div>
+                        </div>
+                    </div>
+                    <div id="overview_0_block_2">
+                        <div id="overview_0_subblock_21">
+                            <span>Epochs</span>
+                            <br>
+                            <input type="number" id="epoch_num" value="1" min="1">
+                        </div>
+                    </div>
+                    <div id="overview_0_block_3">
+                        <div id="overview_0_subblock_31">
+                            <span>Steps per Epoch</span>
+                            <br>
+                            <input type="number" id="steps_num" value="1" min="1">
+                        </div>
+                    </div>
+                    <div id="overview_0_block_4">
+                        <div id="overview_0_subblock_41">
+                            <span>Optimizer</span>
+                            <br>
+                            <select id="optimizer_sel">
+                                <option value="Adadelta">Adadelta</option>
+                                <option value="Adagrad">Adagrad</option>
+                                <option value="Adam" selected="selected">Adam</option>
+                                <option value="Adamax">Adamax</option>
+                                <option value="Ftrl">Ftrl</option>
+                                <option value="Nadam">Nadam</option>
+                                <option value="Optimizer">Optimizer</option>
+                                <option value="RMSprop">RMSprop</option>
+                                <option value="SGD">SGD</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div id="overview_0_block_5">
+                        <div id="overview_0_subblock_51">
+                            <span>Learning Rate</span>
+                            <br>
+                            <input type="number" id="learning_rate_num" value="0.001" min="0.0000000000000001">
+                        </div>
+                    </div>
+                    <div id="overview_0_block_6">
+                        <div id="overview_0_subblock_61">
+                            <span>Activation Function:  </span>
+                            <select id="actv_func">
+                                <option value=""></option>
+                                <option value="deserialize">deserialize</option>
+                                <option value="elu">elu</option>
+                                <option value="exponential">exponential</option>
+                                <option value="gelu">gelu</option>
+                                <option value="get">get</option>
+                                <option value="hard_sigmoid">hard_sigmoid</option>
+                                <option value="linear">linear</option>
+                                <option value="relu" selected="selected">relu</option>
+                                <option value="selu">selu</option>
+                                <option value="serialize">serialize</option>
+                                <option value="sigmoid">sigmoid</option>
+                                <option value="softmax">softmax</option>
+                                <option value="softplus">softplus</option>
+                                <option value="softsign">softsign</option>
+                                <option value="swish">swish</option>
+                                <option value="tanh">tanh</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div id="overview_0_block_7">
+                        <div id="overview_0_subblock_71"></div>
+                    </div>
+                    <button id="start_train">Start Training</button>
+                </div>
+            </div>
+            <div id="overview_1">
+                <div class="module_inside"></div>
+            </div>
+            <div id="overview_2">
+                <div class="module_inside"></div>
+            </div>
+            <div id="overview_3">
+                <div class="module_inside" id="overview_3_container"></div>
+                <button id="show_overview_3" style="position:relative;z-index:50"> show </button>
+            </div>
+        </div>
+        <div class="part_outside" id="detail_part">
+            <div class="part_title">
+                <button id="show_detail_2" style="position:relative;z-index:50"> show </button>
+                DETAIL</div>
+            <div id="detail_1">
+                <div class="module_inside" id="detail_1_container"></div>
+            </div>
+            <div id="detail_2">
+                <div class="module_inside" id="detail_2_container"></div>
+            </div>
+            <div id="detail_3">
+                <div class="module_inside" id="detail_3_container"></div>
+            </div>
+            <div id="detail_4">
+                <div class="module_inside"></div>
+            </div>
+        </div>
+    </body>
+
+    
+    <script src="./static/js/server_act.js?r={{reload}}"></script>
+</html>

@@ -1,0 +1,60 @@
+<!DOCTYPE html><html lang="en">
+
+<head> <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <title>Document</title>
+
+    <style> #text{ width: 1000px; height: 800px; } </style>
+
+</head>
+
+<body>
+
+    <input type="file" id="file-input" />
+
+    <div id="file-content"></div>
+
+    <textarea id='text'> </textarea>
+
+ </body>
+
+<script>
+
+        function readSingleFile(e) {
+
+//获取选择的文件对象
+
+var file = e.target.files[0]; if (!file) { return; }
+
+// 创建FileReader对象
+
+var reader = new FileReader();
+
+// load 回调
+
+reader.onload = function(e) { var contents = e.target.result;
+
+// alert(contents)
+
+// 内容处理
+
+document.getElementById("text").value = contents; };
+
+// 读取文件
+
+reader.readAsText(file,"utf-8"); }
+
+// 添加监听事件
+
+var fileInput = document.getElementById("file-input"); fileInput.addEventListener("change", readSingleFile, false);
+
+</script></html>
+
+作者：小小潶
+链接：https://www.jianshu.com/p/66432b7d30cd
+来源：简书
+著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。
