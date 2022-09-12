@@ -57,9 +57,9 @@ $('#terminal_bttm').mouseout(function() {
 $("#equation_add").click(function() {
     let equation_name = $("#equation_name").text();
     let equation_num = parseInt(equation_name.slice(8,));
-    let fd = new FormData();
-    fd.append("equ_num", equation_name.slice(8,));
-    fd.append("equ_equ", $("#new_equation").val());
+    // let fd = new FormData();
+    // fd.append("equ_num", equation_name.slice(8,));
+    // fd.append("equ_equ", $("#new_equation").val());
     $.ajax('/server7?equ_act=add', {
         type:'post',
         data: {"equ_num": equation_name.slice(8,), "equ_equ": $("#new_equation").val()}
@@ -124,12 +124,12 @@ $("#derivative_add").click(function() {
 
 $('#upload_csv').click(function () {
     let $upfile = $('input[name="select_csv"]');
-    let fd = new FormData();
-    fd.append("upfile", $upfile.prop('files')[0]);
+    // let fd = new FormData();
+    // fd.append("upfile", $upfile.prop('files')[0]);
     $.ajax({
         url:'/server3',
         type:'post',
-        data: fd,
+        data: {"upfile": $upfile.prop('files')[0]},
         processData: false,
         contentType: false,
         cache: false,
@@ -291,12 +291,12 @@ $("#exa_sol_open").click(function() {
     wait_py_timer = setInterval(() => {
         if ($("#select_py").prop('files')[0]) {
             clearInterval(wait_py_timer);
-            let fd = new FormData();
-            fd.append("upfile", $("#select_py").prop('files')[0]);
+            // let fd = new FormData();
+            // fd.append("upfile", $("#select_py").prop('files')[0]);
             $.ajax({
                 url:'/server8?exa_act=open',
                 type:'post',
-                data: fd,
+                data: {"upfile": $("#select_py").prop('files')[0]},
                 processData: false,
                 contentType: false,
                 cache: false,
@@ -336,6 +336,11 @@ $("#new_layer_add").click(function() {
             $("#layers_span").text(data.layers.join('=>'));
         });
         $("#overview_0_subblock_71").append('<div class="layer_" id="layer_' + String(layer_num) + '"><span>Hidden Layer ' + String(layer_num) + '</span><br><select disabled="true" id="actv_func' + String(layer_num) + '"><option value="deserialize">deserialize</option><option value="elu">elu</option><option value="exponential">exponential</option><option value="gelu">gelu</option><option value="get">get</option><option value="hard_sigmoid">hard_sigmoid</option><option value="linear">linear</option><option value="relu" selected="selected">relu</option><option value="selu">selu</option><option value="serialize">serialize</option><option value="sigmoid">sigmoid</option><option value="softmax">softmax</option><option value="softplus">softplus</option><option value="softsign">softsign</option><option value="swish">swish</option><option value="tanh">tanh</option></select></div>');
+        if ($("#actv_func").val()!='') {
+            $("#actv_func" + String(layer_num)).val($("#actv_func").val()).change();
+        } else {
+            $("#actv_func" + String(layer_num)).prop('disabled', false);
+        }
         layer_num += 1;
         $("#new_layer_title").text('New Hidden Layer (' + String(layer_num) + '):  ');
     }
@@ -371,7 +376,20 @@ $("#actv_func").change(function() {
     }
 });
 
-
+$("#start_train").click(function() {
+    let layer_num = parseInt($("#new_layer_title").text().slice(18,-4));
+    let actv_funcs = Array();
+    for (let i=1;i<layer_num;i++) {
+        actv_funcs.push($("#actv_func" + String(i)));
+    }
+    $.ajax('/server10', {
+        type: 'post',
+        data: {'epoch_num': $("#epoch_num").val(),
+            'steps_num': $("#steps_num").val(),
+            'optimizer_sel': $("#optimizer_sel").val(),
+            'learning_rate_num':  $("#learning_rate_num").val(),
+            'actv_funcs': actv_funcs},}).done
+});
 
 
 

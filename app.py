@@ -177,3 +177,7 @@ def server9():
             Hyper_settings['layers'] = Hyper_settings['layers'][:-2] + Hyper_settings['layers'][-1:]
             isgood = "good"
         return {'layers': Hyper_settings['layers'], 'isgood': isgood}
+    
+@app.route('/server10', methods=['POST', 'GET'])
+def server10():
+    if request.method == 'POST':
