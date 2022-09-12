@@ -24,7 +24,8 @@ Hyper_settings = {'layers': [1, 1],
                   'epochs': '1',
                   'steps': '1',
                   'optimizer': 'Adam',
-                  'learning_rate': '0.001'}
+                  'learning_rate': '0.001',
+                  'activation_functions': []}
 
 
 @app.after_request
@@ -46,6 +47,7 @@ def index():
     Hyper_settings['steps'] = '1'
     Hyper_settings['optimizer'] = 'Adam'
     Hyper_settings['learning_rate'] = '0.001'
+    Hyper_settings['activation_functions'] = []
     return render_template("index.html", reload = time.time())
 
 @app.route('/server_log', methods=['POST', 'GET'])
@@ -181,3 +183,9 @@ def server9():
 @app.route('/server10', methods=['POST', 'GET'])
 def server10():
     if request.method == 'POST':
+        Hyper_settings['epochs'] = request.form.get('epoch_num')
+        Hyper_settings['steps'] = request.form.get('steps_num')
+        Hyper_settings['optimizer'] = request.form.get('optimizer_sel')
+        Hyper_settings['learning_rate'] = request.form.get('learning_rate_num')
+        Hyper_settings['activation_functions'] = request.form.get('actv_funcs').split(',')
+        return request.form.get('actv_funcs')

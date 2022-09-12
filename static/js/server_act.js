@@ -57,12 +57,15 @@ $('#terminal_bttm').mouseout(function() {
 $("#equation_add").click(function() {
     let equation_name = $("#equation_name").text();
     let equation_num = parseInt(equation_name.slice(8,));
-    // let fd = new FormData();
-    // fd.append("equ_num", equation_name.slice(8,));
-    // fd.append("equ_equ", $("#new_equation").val());
+    let fd = new FormData();
+    fd.append("equ_num", equation_name.slice(8,));
+    fd.append("equ_equ", $("#new_equation").val());
     $.ajax('/server7?equ_act=add', {
         type:'post',
-        data: {"equ_num": equation_name.slice(8,), "equ_equ": $("#new_equation").val()}
+        data: fd,
+        processData: false,
+        contentType: false,
+        cache: false,
     }).done(function(data) {
         div_tmp = $('<div>').attr('id', 'PDE' + equation_name.slice(8,)).attr('class', 'equ_div').css("font-size", "14px").css("visibility", 'hidden').appendTo($("#equation_show"));
         div_tmp.html('$${\\bf PDE' + equation_name.slice(8,) + ':}\\quad 0 = ' + data.slice(2,-2) + '$$');
@@ -124,12 +127,12 @@ $("#derivative_add").click(function() {
 
 $('#upload_csv').click(function () {
     let $upfile = $('input[name="select_csv"]');
-    // let fd = new FormData();
-    // fd.append("upfile", $upfile.prop('files')[0]);
+    let fd = new FormData();
+    fd.append("upfile", $upfile.prop('files')[0]);
     $.ajax({
         url:'/server3',
         type:'post',
-        data: {"upfile": $upfile.prop('files')[0]},
+        data: fd,
         processData: false,
         contentType: false,
         cache: false,
@@ -291,12 +294,12 @@ $("#exa_sol_open").click(function() {
     wait_py_timer = setInterval(() => {
         if ($("#select_py").prop('files')[0]) {
             clearInterval(wait_py_timer);
-            // let fd = new FormData();
-            // fd.append("upfile", $("#select_py").prop('files')[0]);
+            let fd = new FormData();
+            fd.append("upfile", $("#select_py").prop('files')[0]);
             $.ajax({
                 url:'/server8?exa_act=open',
                 type:'post',
-                data: {"upfile": $("#select_py").prop('files')[0]},
+                data: fd,
                 processData: false,
                 contentType: false,
                 cache: false,
@@ -380,15 +383,23 @@ $("#start_train").click(function() {
     let layer_num = parseInt($("#new_layer_title").text().slice(18,-4));
     let actv_funcs = Array();
     for (let i=1;i<layer_num;i++) {
-        actv_funcs.push($("#actv_func" + String(i)));
+        actv_funcs.push($("#actv_func" + String(i)).val());
     }
+    let fd = new FormData();
+    fd.append('epoch_num', $("#epoch_num").val());
+    fd.append('steps_num', $("#steps_num").val());
+    fd.append('optimizer_sel', $("#optimizer_sel").val());
+    fd.append('learning_rate_num', $("#learning_rate_num").val());
+    fd.append('actv_funcs', actv_funcs);
     $.ajax('/server10', {
         type: 'post',
-        data: {'epoch_num': $("#epoch_num").val(),
-            'steps_num': $("#steps_num").val(),
-            'optimizer_sel': $("#optimizer_sel").val(),
-            'learning_rate_num':  $("#learning_rate_num").val(),
-            'actv_funcs': actv_funcs},}).done
+        data: fd,
+        processData: false,
+        contentType: false,
+        cache: false,
+    }).done(function(data) {
+        console.log(data);
+    });
 });
 
 
