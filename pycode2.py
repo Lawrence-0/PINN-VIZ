@@ -1,8 +1,12 @@
 import pandas as pd
+import numpy as np
 import tensorflow as tf
 import time
 import os
 # from pycode1 import *
+import sys
+original_stdout = sys.stdout
+sys.stdout = open('log.log', 'a')
 
 
 optimizers = {
@@ -39,8 +43,8 @@ actv_funcs = [
 def model_train(PDE_vars, csv_path, code, layers, epochs, steps_per_epoch, optimizer, learning_rate, actv_func):
     with tf.device("/cpu:0"):
         df = pd.read_csv(csv_path)
-        input_tensor = tf.convert_to_tensor(df.loc[:,[x.name for x in list(PDE_vars.input_dict.values()) + list(PDE_vars.parameter_dict.values())]],dtype=tf.float32)
-        output_tensor = tf.convert_to_tensor(df.loc[:,[x.name for x in list(PDE_vars.output_dict.values())]], dtype=tf.float32)
+        input_tensor = tf.convert_to_tensor(np.asarray(df.loc[:,[x.name for x in list(PDE_vars.input_dict.values()) + list(PDE_vars.parameter_dict.values())]]), dtype=tf.float32)
+        output_tensor = tf.convert_to_tensor(np.asarray(df.loc[:,[x.name for x in list(PDE_vars.output_dict.values())]]), dtype=tf.float32)
         exec(code, globals())
         class PINN(tf.keras.models.Sequential):
             def __init__(self, pde, rate=1.0):
@@ -61,7 +65,7 @@ def model_train(PDE_vars, csv_path, code, layers, epochs, steps_per_epoch, optim
                             tf.print(p_l, output_stream='file://temp.txt')
                 return super(PINN, self).call(inputs)
         mypinn = PINN(pde)
-        mypinn.add(tf.keras.layers.Dense(layers[1], input_shape=(layers[0],), activation=actv_func[0]))
+        mypinn.add(tf.keras.layers.Dense(layers[1], input_shape=(layers[0] + int(PDE_vars.PDE_type['parameter']),), activation=actv_func[0]))
         for i in range(2, len(layers)-1):
             mypinn.add(tf.keras.layers.Dense(layers[i], activation=actv_func[i-1]))
         mypinn.add(tf.keras.layers.Dense(layers[-1]))

@@ -4,7 +4,6 @@ import time
 import os
 import pandas as pd
 import importlib
-from pycode1 import *
 import logging
 flask_log = logging.getLogger('werkzeug')
 flask_log.disabled = True
@@ -12,6 +11,9 @@ if os.path.exists('log.log'):
     os.remove('log.log')
 log_len = 0
 logging.basicConfig(filename='log.log', level=logging.DEBUG)
+
+from pycode1 import *
+from pycode2 import *
 
 app = Flask(__name__)
 
@@ -110,7 +112,17 @@ def server4():
 def server5():
     if request.method == 'POST':
         PDE_vars['PDE_vars'] = PDE_vars_list(PDE_type)
+<<<<<<< HEAD
+        rows = pd.read_csv('./temp/data.csv').to_dict('records')
+        if len(rows) > 10000:
+            rows_smp = random.sample(rows, 10000)
+        else:
+            rows_smp = rows
+        print(PDE_type['input'])
+        return jsonify({'vars': PDE_tp2var(PDE_type, varO=False), 'in_type': PDE_type['input'], 'rows': rows, 'rows_smp': rows_smp})
+=======
         return jsonify({'vars': PDE_tp2var(PDE_type, varO=False), 'in_type': PDE_type['input'], 'rows': pd.read_csv('./temp/data.csv').to_dict('records')})
+>>>>>>> parent of 99351a2 (lab0914)
     
 @app.route('/server6', methods=['POST', 'GET'])
 def server6():
@@ -188,4 +200,4 @@ def server10():
         Hyper_settings['optimizer'] = request.form.get('optimizer_sel')
         Hyper_settings['learning_rate'] = request.form.get('learning_rate_num')
         Hyper_settings['activation_functions'] = request.form.get('actv_funcs').split(',')
-        return request.form.get('actv_funcs')
+        return model_train(PDE_vars['PDE_vars'], './temp/data.csv', pde_code(PDE_vars['PDE_vars'], PDE_vars['PDE_equs']), Hyper_settings['layers'], int(Hyper_settings['epochs']), int(Hyper_settings['steps']), Hyper_settings['optimizer'], float(Hyper_settings['learning_rate']), Hyper_settings['activation_functions'])
