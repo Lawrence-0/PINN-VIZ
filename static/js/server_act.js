@@ -156,12 +156,14 @@ $('#analyze_csv').click(function() {
         method: 'post',
         success: function(data) {
             $("#control_2_block_3").empty();
-            if (data.in_type=='1DoT' || data.in_type=='1DowT') {
+            console.log('step1')
+            if (data.in_type=='1DoT' || data.in_type=='1DwT') {
                 show_csv_1d("control_2_block_3", data.rows);
-            } else if (data.in_type=='2DoT' || data.in_type=='2DowT') {
-                show_csv_2d("control_2_block_3", data.rows);
-            } else if (data.in_type=='3DoT' || data.in_type=='3DowT') {
-                show_csv_3d("control_2_block_3", data.rows);
+            } else if (data.in_type=='2DoT' || data.in_type=='2DwT') {
+                show_csv_2d("control_2_block_3", data.rows_smp);
+            } else if (data.in_type=='3DoT' || data.in_type=='3DwT') {
+                console.log('step2')
+                show_csv_3d("control_2_block_3", data.rows_smp);
             }
             let sel_tmp = $('#select_csv_show');
             sel_tmp.empty();

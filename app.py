@@ -1,4 +1,5 @@
 from flask import  Flask, jsonify, render_template, request
+import random
 import json
 import time
 import os
@@ -11,7 +12,6 @@ if os.path.exists('log.log'):
     os.remove('log.log')
 log_len = 0
 logging.basicConfig(filename='log.log', level=logging.DEBUG)
-
 from pycode1 import *
 from pycode2 import *
 
@@ -107,12 +107,11 @@ def server4():
         elif PDE_type['input'] == '3DwT':
             Hyper_settings['layers'] = [4, int(PDE_type['output'])]
         return {'layers': Hyper_settings['layers']}
-    
+
 @app.route('/server5', methods=['POST', 'GET'])
 def server5():
     if request.method == 'POST':
         PDE_vars['PDE_vars'] = PDE_vars_list(PDE_type)
-<<<<<<< HEAD
         rows = pd.read_csv('./temp/data.csv').to_dict('records')
         if len(rows) > 10000:
             rows_smp = random.sample(rows, 10000)
@@ -120,9 +119,6 @@ def server5():
             rows_smp = rows
         print(PDE_type['input'])
         return jsonify({'vars': PDE_tp2var(PDE_type, varO=False), 'in_type': PDE_type['input'], 'rows': rows, 'rows_smp': rows_smp})
-=======
-        return jsonify({'vars': PDE_tp2var(PDE_type, varO=False), 'in_type': PDE_type['input'], 'rows': pd.read_csv('./temp/data.csv').to_dict('records')})
->>>>>>> parent of 99351a2 (lab0914)
     
 @app.route('/server6', methods=['POST', 'GET'])
 def server6():
