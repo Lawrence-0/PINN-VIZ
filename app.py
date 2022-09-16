@@ -11,7 +11,7 @@ flask_log.disabled = True
 if os.path.exists('log.log'):
     os.remove('log.log')
 log_len = 0
-logging.basicConfig(filename='log.log', level=logging.DEBUG)
+# logging.basicConfig(filename='log.log', level=logging.DEBUG)
 from pycode1 import *
 from pycode2 import *
 
@@ -134,7 +134,7 @@ def server6():
 def server7():
     if request.method == 'POST':
         if request.args.get('equ_act') == 'add':
-            PDE_vars['PDE_equs'].append('Loss' + str(len(PDE_vars['PDE_equs']) + 1) + ' = tf.abs(' + request.form.get('equ_equ') + ')')
+            PDE_vars['PDE_equs'].append('loss' + str(len(PDE_vars['PDE_equs']) + 1) + ' = tf.abs(' + request.form.get('equ_equ') + ')')
             print(pde_code(PDE_vars['PDE_vars'], PDE_vars['PDE_equs']))
             return equation_show(request.form.get('equ_equ'), PDE_vars['PDE_vars'])
         else:

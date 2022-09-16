@@ -41,16 +41,15 @@ actv_funcs = [
 
 def model_train(PDE_vars, csv_path, code, layers, epochs, steps_per_epoch, optimizer, learning_rate, actv_func):
     with tf.device("/cpu:0"):
+        exec(code, globals())
         df = pd.read_csv(csv_path)
         input_tensor = tf.convert_to_tensor(np.asarray(df.loc[:,[x.name for x in list(PDE_vars.input_dict.values()) + list(PDE_vars.parameter_dict.values())]]), dtype=tf.float32)
         output_tensor = tf.convert_to_tensor(np.asarray(df.loc[:,[x.name for x in list(PDE_vars.output_dict.values())]]), dtype=tf.float32)
-        exec(code, globals())
         class PINN(tf.keras.models.Sequential):
             def __init__(self, pde, rate=1.0):
                 super(PINN, self).__init__()
                 self.rate = rate
                 self.pde = pde
-                # self.phsc_loss = None
             def call(self, inputs, training=False):
                 if training:
                     with tf.GradientTape(persistent=True) as tape:
@@ -58,11 +57,10 @@ def model_train(PDE_vars, csv_path, code, layers, epochs, steps_per_epoch, optim
                         f_predict = super(PINN, self).call(inputs)
                         phsc_loss = [tf.reduce_mean(p_l) for p_l in self.pde(tape, inputs, f_predict)]
                         self.add_loss(tf.math.multiply(self.rate, phsc_loss[0]))
-                        tf.print("epochTag", output_stream='file://tmptmp.txt')
-                        tf.print(phsc_loss[0], output_stream='file://tmptmp.txt')
+                        tf.print("epochTag", output_stream='file://temp1.txt')
                         for p_l in phsc_loss[1:]:
-                            tf.print("lossTag", output_stream='file://tmptmp.txt')
-                            tf.print(p_l, output_stream='file://tmptmp.txt')
+                            tf.print("lossTag", output_stream='file://temp1.txt')
+                            tf.print(p_l, output_stream='file://temp1.txt')
                 return super(PINN, self).call(inputs)
         mypinn = PINN(pde)
         mypinn.add(tf.keras.layers.Dense(layers[1], input_shape=(layers[0] + int(PDE_vars.PDE_type['parameter']),), activation=actv_func[0]))
@@ -70,9 +68,9 @@ def model_train(PDE_vars, csv_path, code, layers, epochs, steps_per_epoch, optim
             mypinn.add(tf.keras.layers.Dense(layers[i], activation=actv_func[i-1]))
         mypinn.add(tf.keras.layers.Dense(layers[-1]))
         history_weights = []
-        # history_phsc_loss = []
+        history_phsc_loss = []
         print_weights = tf.keras.callbacks.LambdaCallback(on_epoch_end=lambda batch, logs: history_weights.append([[wght_bias.tolist() for wght_bias in layer.get_weights()] for layer in mypinn.layers]))
-        # print_phsc_loss = tf.keras.callbacks.LambdaCallback(on_epoch_end=lambda batch, logs: history_phsc_loss.append(mypinn.phsc_loss))
+        print_phsc_loss = tf.keras.callbacks.LambdaCallback(on_epoch_end=lambda batch, logs: history_phsc_loss.append(mypinn.phsc_loss))
         mypinn.summary()
         mypinn.compile(optimizer=optimizers[optimizer](learning_rate=learning_rate), loss='mse')
         tt_loss=[]
