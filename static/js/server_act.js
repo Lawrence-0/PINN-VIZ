@@ -92,10 +92,6 @@ $("#equation_sub").click(function() {
 });
 
 $("#derivative_sub").click(function() {
-    $.ajax({
-        url:'/server6?der_act=sub',
-        type: 'post',
-    });
     let derivative_name = $("#derivative_0").text();
     let derivative_num = parseInt(derivative_name.slice(10,));
     if (derivative_num > 1) {
@@ -104,6 +100,10 @@ $("#derivative_sub").click(function() {
         $("#derivative_1").children('option').slice(-1).remove();
         $("#derivative_0").text('Derivative' + String(derivative_num-1));
         $("#control_3_block_2").children().slice(-1).remove();
+        $.ajax({
+            url:'/server6?der_act=sub',
+            type: 'post',
+        });
     }
 });
 
