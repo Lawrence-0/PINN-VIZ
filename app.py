@@ -21,7 +21,8 @@ PDE_type = {'input': '1DoT',
             'output': '1',
             'parameter': '1'}
 PDE_vars = {'PDE_vars': None,
-            'PDE_equs': []}
+            'PDE_equs': [],
+            'PDE_wgts': []}
 Hyper_settings = {'layers': [1, 1],
                   'epochs': '1',
                   'steps': '1',
@@ -135,7 +136,6 @@ def server7():
     if request.method == 'POST':
         if request.args.get('equ_act') == 'add':
             PDE_vars['PDE_equs'].append('loss' + str(len(PDE_vars['PDE_equs']) + 1) + ' = tf.abs(' + request.form.get('equ_equ') + ')')
-            print(pde_code(PDE_vars['PDE_vars'], PDE_vars['PDE_equs']))
             return equation_show(request.form.get('equ_equ'), PDE_vars['PDE_vars'])
         else:
             PDE_vars['PDE_equs'].pop(-1)
@@ -196,4 +196,12 @@ def server10():
         Hyper_settings['optimizer'] = request.form.get('optimizer_sel')
         Hyper_settings['learning_rate'] = request.form.get('learning_rate_num')
         Hyper_settings['activation_functions'] = request.form.get('actv_funcs').split(',')
-        return model_train(PDE_vars['PDE_vars'], './temp/data.csv', pde_code(PDE_vars['PDE_vars'], PDE_vars['PDE_equs']), Hyper_settings['layers'], int(Hyper_settings['epochs']), int(Hyper_settings['steps']), Hyper_settings['optimizer'], float(Hyper_settings['learning_rate']), Hyper_settings['activation_functions'])
+        model_train(PDE_vars['PDE_vars'], './temp/data.csv', pde_code(PDE_vars['PDE_vars'], PDE_vars['PDE_equs'], PDE_vars['PDE_wgts']), Hyper_settings['layers'], int(Hyper_settings['epochs']), int(Hyper_settings['steps']), Hyper_settings['optimizer'], float(Hyper_settings['learning_rate']), Hyper_settings['activation_functions'])
+        return 'good'
+    
+@app.route('/server11', methods=['POST', 'GET'])
+def server11():
+    if request.method == 'POST':
+        PDE_vars['PDE_wgts'] = request.form.get('weights').split(',')
+        print(pde_code(PDE_vars['PDE_vars'], PDE_vars['PDE_equs'], PDE_vars['PDE_wgts']))
+        return 'good'

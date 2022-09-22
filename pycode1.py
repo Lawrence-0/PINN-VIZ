@@ -163,9 +163,9 @@ def equation_show(equ_equ, PDE_vars):
         equ_equ = equ_equ.replace(d, "{D_{" + d[1:] + "}}")
     return "$$" + equ_equ + "$$"
 
-def pde_code(PDE_vars, PDE_equs):
+def pde_code(PDE_vars, PDE_equs, PDE_wgts):
     rst = PDE_vars.to_pde_code()
     for p in PDE_equs:
         rst += "\n\t" + p
-    rst += "\n\treturn [" + (' + ').join(['loss' + str(i) for i in range(1, len(PDE_equs) + 1)]) + ', ' + (', ').join(['loss' + str(i) for i in range(1, len(PDE_equs) + 1)]) + ']'
+    rst += "\n\treturn [" + (' + ').join(['(' + PDE_wgts[i-1] + ' * loss' + str(i) + ')' for i in range(1, len(PDE_equs) + 1)]) + ', ' + (', ').join(['loss' + str(i) for i in range(1, len(PDE_equs) + 1)]) + ']'
     return rst

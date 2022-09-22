@@ -72,7 +72,7 @@ $("#equation_add").click(function() {
         MathJax.Hub.Queue(["Typeset",MathJax.Hub,"#div_tmp"]);
         div_tmp.css("visibility", 'visible');
         ddiv_tmp = $('<div>').attr('id', 'PDE' + equation_name.slice(8,) + '_w').attr('class', 'equ_div_w').appendTo($("#equation_show"));
-        $('<input>').attr('type', 'number').attr('value', '0').attr('min', '0').css('width', '90%').css('transform', 'translate(0,50%)').appendTo(ddiv_tmp);
+        $('<input>').attr('id', 'PDE' + equation_name.slice(8,) + '_w_num').attr('type', 'number').attr('value', '0').attr('min', '0').css('width', '90%').css('transform', 'translate(0,50%)').appendTo(ddiv_tmp);
     });
     $("#equation_name").text('Equation' + String(equation_num+1));
 })
@@ -187,6 +187,7 @@ $('#analyze_csv').click(function() {
     $("#new_equation").prop('disabled', false);
     $("#equation_add").prop('disabled', false);
     $("#equation_sub").prop('disabled', false);
+    $('#equation_confirm').prop('disabled', false);
 });
 
 $("#select_PDE_input").change(function(){
@@ -289,6 +290,37 @@ $("#exa_sol_new").click(function() {
     });
 });
 
+$('#equation_confirm').click(function() {
+    $("#derivative_1").prop('disabled', true);
+    $("#derivative_2").prop('disabled', true);
+    $("#derivative_add").prop('disabled', true);
+    $("#derivative_sub").prop('disabled', true);
+    $("#new_equation").prop('disabled', true);
+    $("#equation_add").prop('disabled', true);
+    $("#equation_sub").prop('disabled', true);
+    $('#equation_confirm').prop('disabled', true);
+    let weights=Array();
+    let equation_num = parseInt($("#equation_name").text().slice(8,));
+    for (let i=1;i<equation_num;i++) {
+        wgt_tmp = $('#PDE'+String(i)+'_w_num');
+        weights.push(wgt_tmp.val());
+        wgt_tmp.prop('disabled', true);
+    }
+    $('#exa_sol_new').prop('disabled', false);
+    $('#exa_sol_open').prop('disabled', false);
+    $('#exa_sol_save').prop('disabled', false);
+    $('#exa_sol_editor').prop('disabled', false);
+    let fd = new FormData();
+    fd.append('weights', weights);
+    $.ajax('/server11', {
+        type: 'post',
+        data: fd,
+        processData: false,
+        contentType: false,
+        cache: false,
+    });
+});
+
 var wait_py_timer
 $("#exa_sol_open").click(function() {
     $("#select_py").val('');
@@ -323,6 +355,19 @@ $("#exa_sol_save").click(function() {
     }).done(function (data) {
         if (data.isgood=='good') {
             alert('File has been uploaded!');
+            $('#exa_sol_new').prop('disabled', true);
+            $('#exa_sol_open').prop('disabled', true);
+            $('#exa_sol_save').prop('disabled', true);
+            $('#exa_sol_editor').prop('disabled', true);
+            $('#new_layer_num').prop('disabled', false);
+            $('#new_layer_add').prop('disabled', false);
+            $('#new_layer_sub').prop('disabled', false);
+            $('#epoch_num').prop('disabled', false);
+            $('#steps_num').prop('disabled', false);
+            $('#optimizer_sel').prop('disabled', false);
+            $('#learning_rate_num').prop('disabled', false);
+            $('#actv_func').prop('disabled', false);
+            $('#start_train').prop('disabled', false);
         } else {
             alert('Invalid code!');
         }
@@ -399,8 +444,6 @@ $("#start_train").click(function() {
         processData: false,
         contentType: false,
         cache: false,
-    }).done(function(data) {
-        console.log(data);
     });
 });
 

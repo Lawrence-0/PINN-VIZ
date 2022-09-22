@@ -41,7 +41,6 @@ actv_funcs = [
 
 def model_train(PDE_vars, csv_path, code, layers, epochs, steps_per_epoch, optimizer, learning_rate, actv_func):
     with tf.device("/cpu:0"):
-        exec(code, globals())
         df = pd.read_csv(csv_path)
         input_tensor = tf.convert_to_tensor(np.asarray(df.loc[:,[x.name for x in list(PDE_vars.input_dict.values()) + list(PDE_vars.parameter_dict.values())]]), dtype=tf.float32)
         output_tensor = tf.convert_to_tensor(np.asarray(df.loc[:,[x.name for x in list(PDE_vars.output_dict.values())]]), dtype=tf.float32)
@@ -57,11 +56,13 @@ def model_train(PDE_vars, csv_path, code, layers, epochs, steps_per_epoch, optim
                         f_predict = super(PINN, self).call(inputs)
                         phsc_loss = [tf.reduce_mean(p_l) for p_l in self.pde(tape, inputs, f_predict)]
                         self.add_loss(tf.math.multiply(self.rate, phsc_loss[0]))
-                        tf.print("epochTag", output_stream='file://temp1.txt')
-                        for p_l in phsc_loss[1:]:
-                            tf.print("lossTag", output_stream='file://temp1.txt')
-                            tf.print(p_l, output_stream='file://temp1.txt')
+                        tf.print("[", output_stream='file://temp/loss_tmp.txt')
+                        for p_l in phsc_loss[0:]:
+                            tf.print(p_l, output_stream='file://temp/loss_tmp.txt')
+                            tf.print(", ", output_stream='file://temp/loss_tmp.txt')
+                        tf.print("], ", output_stream='file://temp/loss_tmp.txt')
                 return super(PINN, self).call(inputs)
+        exec(code, globals())
         mypinn = PINN(pde)
         mypinn.add(tf.keras.layers.Dense(layers[1], input_shape=(layers[0] + int(PDE_vars.PDE_type['parameter']),), activation=actv_func[0]))
         for i in range(2, len(layers)-1):
@@ -75,10 +76,24 @@ def model_train(PDE_vars, csv_path, code, layers, epochs, steps_per_epoch, optim
         mypinn.compile(optimizer=optimizers[optimizer](learning_rate=learning_rate), loss='mse')
         tt_loss=[]
         start = time.time()
+        with open('temp/loss_tmp.txt', 'w') as f:
+            f.write('[')
         for _ in range(epochs):
+            with open('temp/loss_tmp.txt', 'w') as f:
+                f.write('[')
             history = mypinn.fit(input_tensor, output_tensor, epochs=1, steps_per_epoch=steps_per_epoch, shuffle=True, callbacks = [print_weights])#, print_phsc_loss])
+            with open('temp/loss_tmp.txt', 'w') as f:
+                f.write('], ')
             tt_loss.append(history.history['loss'][0])
+        with open('temp/loss_tmp.txt', 'a') as f:
+            f.write(']')
         time_cost = time.time() - start
+        with open('temp/loss_tmp.txt', 'r') as f:
+            loss_str = f.read().replace('\n', '')
+        with open('temp/loss_tmp.txt', 'w') as f:
+            f.write(loss_str)
+        with open('temp/_tmp.txt', 'w') as f:
+            f.write(str(tt_loss))
         # phsc_his = [[float(x) for x in t.split('lossTag')[1:]] for t in open("temp1.txt","r").read().replace('\n','').split('epochTag')[1:]]
         # os.remove('tmptmp.txt')
         # with open('good.txt','w') as f:
