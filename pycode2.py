@@ -69,20 +69,19 @@ def model_train(PDE_vars, csv_path, code, layers, epochs, steps_per_epoch, optim
             mypinn.add(tf.keras.layers.Dense(layers[i], activation=actv_func[i-1]))
         mypinn.add(tf.keras.layers.Dense(layers[-1]))
         history_weights = []
-        history_phsc_loss = []
         print_weights = tf.keras.callbacks.LambdaCallback(on_epoch_end=lambda batch, logs: history_weights.append([[wght_bias.tolist() for wght_bias in layer.get_weights()] for layer in mypinn.layers]))
-        print_phsc_loss = tf.keras.callbacks.LambdaCallback(on_epoch_end=lambda batch, logs: history_phsc_loss.append(mypinn.phsc_loss))
         mypinn.summary()
         mypinn.compile(optimizer=optimizers[optimizer](learning_rate=learning_rate), loss='mse')
         tt_loss=[]
         start = time.time()
         with open('temp/loss_tmp.txt', 'w') as f:
             f.write('[')
-        for _ in range(epochs):
-            with open('temp/loss_tmp.txt', 'w') as f:
+        for epoch in range(epochs):
+            print('Epoch ' + str(epoch))
+            with open('temp/loss_tmp.txt', 'a') as f:
                 f.write('[')
             history = mypinn.fit(input_tensor, output_tensor, epochs=1, steps_per_epoch=steps_per_epoch, shuffle=True, callbacks = [print_weights])#, print_phsc_loss])
-            with open('temp/loss_tmp.txt', 'w') as f:
+            with open('temp/loss_tmp.txt', 'a') as f:
                 f.write('], ')
             tt_loss.append(history.history['loss'][0])
         with open('temp/loss_tmp.txt', 'a') as f:
@@ -90,13 +89,10 @@ def model_train(PDE_vars, csv_path, code, layers, epochs, steps_per_epoch, optim
         time_cost = time.time() - start
         with open('temp/loss_tmp.txt', 'r') as f:
             loss_str = f.read().replace('\n', '')
+        rst_dict = dict()
+        exec("rst_dict['loss_list'] = " + loss_str)
+        rst_dict['loss_list'] = [[tt_loss[i], tt_loss[i] - rst_dict['loss_list'][i][-1][0]] + rst_dict['loss_list'][i][-1][1:] for i in range(len(tt_loss))]
+        rst_dict['weight_list'] = history_weights
         with open('temp/loss_tmp.txt', 'w') as f:
-            f.write(loss_str)
-        with open('temp/_tmp.txt', 'w') as f:
-            f.write(str(tt_loss))
-        # phsc_his = [[float(x) for x in t.split('lossTag')[1:]] for t in open("temp1.txt","r").read().replace('\n','').split('epochTag')[1:]]
-        # os.remove('tmptmp.txt')
-        # with open('good.txt','w') as f:
-        #     f.write(str(history_phsc_loss))
-        # print(history_phsc_loss)
+            f.write(str(rst_dict))
         return tt_loss
