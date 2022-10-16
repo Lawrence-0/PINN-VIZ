@@ -74,11 +74,11 @@ def server1():
 @app.route('/server2', methods=['POST', 'GET'])
 def server2():
     if request.method == 'POST':
-        with open('./temps/data1_.json',"r") as f:
+        with open('./temp/data1.json',"r") as f:
             data1 = json.load(f)
-        with open('./temps/losses.json',"r") as f:
+        with open('./temp/data2.json',"r") as f:
             data2 = json.load(f)
-        return jsonify({"epoch": 100, "data1": data1, "data2": data2})
+        return jsonify({"epoch": int(Hyper_settings['epochs']), "data1": data1, "data2": data2})
     
 @app.route('/server3', methods=['POST', 'GET'])
 def server3():

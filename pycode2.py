@@ -4,6 +4,7 @@ import tensorflow as tf
 import time
 import os
 import sys
+import json
 original_stdout = sys.stdout
 sys.stdout = open('log.log', 'a')
 
@@ -89,10 +90,23 @@ def model_train(PDE_vars, csv_path, code, layers, epochs, steps_per_epoch, optim
         time_cost = time.time() - start
         with open('temp/loss_tmp.txt', 'r') as f:
             loss_str = f.read().replace('\n', '')
-        rst_dict = dict()
-        exec("rst_dict['loss_list'] = " + loss_str)
-        rst_dict['loss_list'] = [[tt_loss[i], tt_loss[i] - rst_dict['loss_list'][i][-1][0]] + rst_dict['loss_list'][i][-1][1:] for i in range(len(tt_loss))]
-        rst_dict['weight_list'] = history_weights
-        with open('temp/loss_tmp.txt', 'w') as f:
-            f.write(str(rst_dict))
+        data1_dict = dict()
+        data2_dict = dict()
+        exec("data2_dict['loss_list'] = " + loss_str)
+        data2_dict['loss_list'] = [[tt_loss[i], tt_loss[i] - data2_dict['loss_list'][i][-1][0]] + data2_dict['loss_list'][i][-1][1:] for i in range(len(tt_loss))]
+        data1_dict['structure'] = layers
+        data1_dict['history'] = history_weights
+        # with open('temp/loss_tmp.txt', 'w') as f:
+        #     f.write(str(data2_dict))
+        
+        jsonString = json.dumps(data1_dict)
+        jsonFile = open("./temp/data1.json", "w")
+        jsonFile.write(jsonString)
+        jsonFile.close()
+        
+        jsonString = json.dumps(data2_dict['loss_list'])
+        jsonFile = open("./temp/data2.json", "w")
+        jsonFile.write(jsonString)
+        jsonFile.close()
+        
         return tt_loss
