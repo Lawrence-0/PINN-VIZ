@@ -811,3 +811,25 @@
     height: 30px;
     bottom: 0;
 }
+#database_show {
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    background-color: black;
+    font-size:x-small;
+    font-family: 'Courier New', Courier, monospace;
+    color:#ffffff;
+    padding: 0;
+    overflow-y: scroll;
+    white-space: pre-line;
+    overflow-x: scroll;
+}
+
+th,td {
+    border: solid 1px;
+}
+table {
+    border-collapse: collapse;
+}

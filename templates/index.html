@@ -254,7 +254,39 @@
                 </div>
             </div>
             <div id="overview_1">
-                <div class="module_inside"></div>
+                <div class="module_inside">
+                    <div id="database_show"><table id="myTable"><tbody>
+                            <tr>
+                                <th></th>
+                                <th onclick="sortTable(1)">&nbsp;&nbsp;Model&nbsp;&nbsp;</th>
+                                <th onclick="sortTable(2)">&nbsp;&nbsp;Structure&nbsp;&nbsp;</th>
+                                <th onclick="sortTable(3)">&nbsp;&nbsp;Epochs&nbsp;&nbsp;</th>
+                                <th onclick="sortTable(4)">&nbsp;&nbsp;Steps per Epoch&nbsp;&nbsp;</th>
+                                <th onclick="sortTable(5)">&nbsp;&nbsp;Optimizer&nbsp;&nbsp;</th>
+                                <th onclick="sortTable(6)">&nbsp;&nbsp;Learning Rate&nbsp;&nbsp;</th>
+                                <th onclick="sortTable(1)">&nbsp;&nbsp;Final Loss&nbsp;&nbsp;</th>
+                            </tr>
+                            <tr>
+                                <td><input type="checkbox" id="model1" name="model1" style="zoom:70%;"></td>
+                                <td>001</td>
+                                <td>4=>30(relu)=>30(relu)=>30(relu)=>1</td>
+                                <td>50</td>
+                                <td>100</td>
+                                <td>Adam</td>
+                                <td>0.001</td>
+                            </tr>
+                            <tr>
+                                <td><input type="checkbox" id="model2" name="model2" style="zoom:70%;"></td>
+                                <td>002</td>
+                                <td>4=>50(relu)=>50(relu)=>50(relu)=>1</td>
+                                <td>30</td>
+                                <td>100</td>
+                                <td>Adam</td>
+                                <td>0.001</td>
+                            </tr>
+                        </tbody></table>
+                    </div>
+                </div>
             </div>
             <div id="overview_2">
                 <div class="module_inside"></div>

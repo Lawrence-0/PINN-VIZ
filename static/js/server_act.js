@@ -450,6 +450,60 @@ $("#start_train").click(function() {
 
 
 
+
+
+
+
+
+
+function sortTable(n) {
+    var theads = ['Model', 'Structure', 'Epochs', 'Steps per Epoch', 'Optimizer', 'Learning Rate'];
+    var table, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
+    table = document.getElementById("myTable");
+    switching = true;
+    dir = "asc";
+    while (switching) {
+        switching = false;
+        rows = table.rows;
+        for (i = 1; i < (rows.length - 1); i++) {
+            shouldSwitch = false;
+            x = rows[i].getElementsByTagName("TD")[n];
+            y = rows[i + 1].getElementsByTagName("TD")[n];
+            if (dir == "asc") {
+                if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
+                    for (let j=1;j<theads.length+1;j++) {
+                        $('#myTable tr th').slice(j,j+1).text('\xa0\xa0'+theads[j-1]+'\xa0\xa0')
+                    }
+                    $('#myTable tr th').slice(n,n+1).text('\xa0\xa0'+theads[n-1]+'\xa0▲')
+                    shouldSwitch = true;
+                    break;
+                }
+            } else if (dir == "desc") {
+                if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase()) {
+                    for (let j=1;j<theads.length+1;j++) {
+                        $('#myTable tr th').slice(j,j+1).text('\xa0\xa0'+theads[j-1]+'\xa0\xa0')
+                    }
+                    $('#myTable tr th').slice(n,n+1).text('\xa0\xa0'+theads[n-1]+'\xa0▼')
+                    shouldSwitch = true;
+                    break;
+                }
+            }
+        }
+        if (shouldSwitch) {
+            rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+            switching = true;
+            switchcount ++;
+        } else {
+            if (switchcount == 0 && dir == "asc") {
+                dir = "desc";
+                switching = true;
+            }
+        }
+    }
+}
+
+
+
 $("#show_overview_3").click(function() {
     $.ajax({
         url:"/server1",
