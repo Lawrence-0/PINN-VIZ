@@ -825,8 +825,6 @@
     overflow-y: scroll;
     white-space: pre-line;
     overflow-x: scroll;
-    display: inline-block;
-    white-space: nowrap;
 }
 #save_proj_text {
     position: absolute;
@@ -843,11 +841,8 @@
     width: 100px;
 }
 
-
 th,td {
     border: solid 1px;
-    word-break: keep-all;
-    white-space: nowrap;
 }
 table {
     border-collapse: collapse;
