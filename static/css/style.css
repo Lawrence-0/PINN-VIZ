@@ -825,10 +825,15 @@
     overflow-y: scroll;
     white-space: pre-line;
     overflow-x: scroll;
+    display: inline-block;
+    white-space: nowrap;
 }
+
 
 th,td {
     border: solid 1px;
+    word-break: keep-all;
+    white-space: nowrap;
 }
 table {
     border-collapse: collapse;
