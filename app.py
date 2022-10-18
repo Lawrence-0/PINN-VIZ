@@ -29,6 +29,8 @@ Hyper_settings = {'layers': [1, 1],
                   'optimizer': 'Adam',
                   'learning_rate': '0.001',
                   'activation_functions': []}
+Project_settings = {'derivative': [],
+                    'equation': []}
 
 
 @app.after_request
@@ -125,9 +127,11 @@ def server5():
 def server6():
     if request.method == 'POST':
         if request.args.get('der_act') == 'add':
+            Project_settings['derivative'].append([request.args.get('up_var'), request.args.get('down_var')])
             PDE_vars['PDE_vars'].add_derivative(request.args.get('der_var'), request.args.get('up_var'), request.args.get('down_var'))
             return PDE_vars['PDE_vars'].to_formula('D' + request.args.get('der_var')[10:])
         else:
+            Project_settings['derivative'].pop()
             PDE_vars['PDE_vars'].sub_derivative()
             return "good"
         
@@ -135,9 +139,11 @@ def server6():
 def server7():
     if request.method == 'POST':
         if request.args.get('equ_act') == 'add':
+            Project_settings['equation'].append(request.form.get('equ_equ'))
             PDE_vars['PDE_equs'].append('loss' + str(len(PDE_vars['PDE_equs']) + 1) + ' = tf.abs(' + request.form.get('equ_equ') + ')')
             return equation_show(request.form.get('equ_equ'), PDE_vars['PDE_vars'])
         else:
+            Project_settings['equation'].pop()
             PDE_vars['PDE_equs'].pop(-1)
             return "good"
         
@@ -205,3 +211,16 @@ def server11():
         PDE_vars['PDE_wgts'] = request.form.get('weights').split(',')
         print(pde_code(PDE_vars['PDE_vars'], PDE_vars['PDE_equs'], PDE_vars['PDE_wgts']))
         return 'good'
+    
+@app.route('/server12', methods=['POST', 'GET'])
+def server12():
+    if request.method == 'POST':
+        Project_settings['input'] = PDE_type['input']
+        Project_settings['output'] = PDE_type['output']
+        Project_settings['parameter'] = PDE_type['parameter']
+        Project_settings['weight'] = PDE_vars['PDE_wgts']
+        jsonString = json.dumps(Project_settings)
+        jsonFile = open("./temp/config.json", "w")
+        jsonFile.write(jsonString)
+        jsonFile.close()
+        return request.form.get('proj_name')

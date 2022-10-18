@@ -19,6 +19,8 @@
     <body>
         <div class="part_outside" id="control_part">
             <div class="part_title">SETTING</div>
+            <input type="text" id="save_proj_text">
+            <button id="save_proj_bttn" type="button">Save Project</button>
             <div id="control_1">
                 <div class="module_inside">
                     <div class="control_1_block" id="control_1_block_1">
@@ -91,13 +93,13 @@
                                     <span style="padding: 0 10px; border-bottom: 1px solid #000000;">
                                         ∂
                                         <select id="derivative_1" disabled="true">
-                                            <option>Output1</option>
+                                            <option value="Output1">Output1</option>
                                         </select>
                                     </span>
                                     <span style="padding: 0 10px;">
                                         ∂
                                         <select id="derivative_2" disabled="true">
-                                            <option>InputX</option>
+                                            <option value="InputX">InputX</option>
                                         </select>
                                     </span>
                                 </span>
@@ -264,7 +266,7 @@
                                 <th onclick="sortTable(4)">&nbsp;&nbsp;Steps per Epoch&nbsp;&nbsp;</th>
                                 <th onclick="sortTable(5)">&nbsp;&nbsp;Optimizer&nbsp;&nbsp;</th>
                                 <th onclick="sortTable(6)">&nbsp;&nbsp;Learning Rate&nbsp;&nbsp;</th>
-                                <th onclick="sortTable(1)">&nbsp;&nbsp;Final Loss&nbsp;&nbsp;</th>
+                                <th onclick="sortTable(7)">&nbsp;&nbsp;Final Loss&nbsp;&nbsp;</th>
                             </tr>
                             <tr>
                                 <td><input type="checkbox" id="model1" name="model1" style="zoom:70%;"></td>
@@ -274,6 +276,7 @@
                                 <td>100</td>
                                 <td>Adam</td>
                                 <td>0.001</td>
+                                <td>0.00123</td>
                             </tr>
                             <tr>
                                 <td><input type="checkbox" id="model2" name="model2" style="zoom:70%;"></td>
@@ -283,6 +286,7 @@
                                 <td>100</td>
                                 <td>Adam</td>
                                 <td>0.001</td>
+                                <td>0.00321</td>
                             </tr>
                         </tbody></table>
                     </div>
@@ -297,9 +301,8 @@
             </div>
         </div>
         <div class="part_outside" id="detail_part">
-            <div class="part_title">
-                <button id="show_detail_2" style="position:relative;z-index:50"> show </button>
-                DETAIL</div>
+            <div class="part_title">DETAIL</div>
+            <button id="show_detail_2" style="position:relative;z-index:50;float:left"> show </button>
             <div id="detail_1">
                 <div class="module_inside" id="detail_1_container"></div>
             </div>

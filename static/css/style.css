@@ -828,6 +828,20 @@
     display: inline-block;
     white-space: nowrap;
 }
+#save_proj_text {
+    position: absolute;
+    right: 109px;
+    top: 6px;
+    height: 18px;
+    width: 150px;
+}
+#save_proj_bttn {
+    position: absolute;
+    right: 6px;
+    top: 6px;
+    height: 24px;
+    width: 100px;
+}
 
 
 th,td {

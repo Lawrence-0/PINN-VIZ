@@ -54,6 +54,10 @@ function show_csv_1d(container, rows) {
     var x_ = unpack(rows, 'InputX')
     x_max = d3.max(x_)
     x_min = d3.min(x_)
+    if (x_max==x_min) {
+        x_max += 1;
+        x_min -= 1;
+    }
     var trace1 = {
         x:x_,
         autobinx: false, 
@@ -84,6 +88,10 @@ function show_csv_any(container, rows, var_name) {
     var x_ = unpack(rows, var_name)
     x_max = d3.max(x_)
     x_min = d3.min(x_)
+    if (x_max==x_min) {
+        x_max += 1;
+        x_min -= 1;
+    }
     var trace1 = {
         x:x_,
         autobinx: false,

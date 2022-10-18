@@ -447,6 +447,19 @@ $("#start_train").click(function() {
     });
 });
 
+$("#save_proj_bttn").click(function() {
+    let fd = new FormData();
+    fd.append('proj_name', $('#save_proj_text').val());
+    $.ajax('/server12', {
+        type: 'post',
+        data: fd,
+        processData: false,
+        contentType: false,
+        cache: false,
+    }).done(function(data) {
+        console.log(data);
+    });
+});
 
 
 
@@ -457,7 +470,7 @@ $("#start_train").click(function() {
 
 
 function sortTable(n) {
-    var theads = ['Model', 'Structure', 'Epochs', 'Steps per Epoch', 'Optimizer', 'Learning Rate'];
+    var theads = ['Model', 'Structure', 'Epochs', 'Steps per Epoch', 'Optimizer', 'Learning Rate', 'Final Loss'];
     var table, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
     table = document.getElementById("myTable");
     switching = true;

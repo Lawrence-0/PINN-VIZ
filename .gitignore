@@ -10,3 +10,5 @@ log.log
 __pycache__/app.cpython-36.pyc
 __pycache__/pycode1.cpython-36.pyc
 __pycache__/pycode2.cpython-36.pyc
+__pycache__/app.cpython-38.pyc
+temp/__pycache__/exa_sol.cpython-38.pyc
