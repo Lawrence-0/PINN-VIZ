@@ -7,6 +7,7 @@ temp/data.csv
 *.csv
 temp/data.csv
 <<<<<<< HEAD
+<<<<<<< HEAD
 log.log
 __pycache__/app.cpython-36.pyc
 __pycache__/pycode1.cpython-36.pyc
@@ -15,3 +16,6 @@ __pycache__/app.cpython-38.pyc
 temp/__pycache__/exa_sol.cpython-38.pyc
 =======
 >>>>>>> parent of 938f246 (home1017)
+=======
+>>>>>>> parent of 938f246 (home1017)
+*.css
