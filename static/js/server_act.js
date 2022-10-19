@@ -148,6 +148,8 @@ $('#upload_csv').click(function () {
 });
 
 $('#analyze_csv').click(function() {
+    $('#load_proj_slct').prop('disabled', true);
+    $('#load_proj_bttn').prop('disabled', true);
     $("#select_PDE_input").prop('disabled', true);
     $("#select_PDE_output").prop('disabled', true);
     $("#select_PDE_parameter").prop('disabled', true);
@@ -191,6 +193,8 @@ $('#analyze_csv').click(function() {
 });
 
 $("#select_PDE_input").change(function(){
+    $('#load_proj_slct').prop('disabled', true);
+    $('#load_proj_bttn').prop('disabled', true);
     $("#control_1_subblock_12").empty();
     $('#control_4_block_1').empty();
     let sel = $('#select_PDE_input option:selected').val();
@@ -234,6 +238,8 @@ $("#select_PDE_input").change(function(){
 });
 
 $("#select_PDE_output").change(function(){
+    $('#load_proj_slct').prop('disabled', true);
+    $('#load_proj_bttn').prop('disabled', true);
     $("#control_1_subblock_22").empty();
     $("#control_4_block_2").empty();
     let new_elems = Array();
@@ -264,6 +270,8 @@ $("#select_PDE_output").change(function(){
 });
 
 $("#select_PDE_parameter").change(function(){
+    $('#load_proj_slct').prop('disabled', true);
+    $('#load_proj_bttn').prop('disabled', true);
     $("#control_1_subblock_32").empty();
     $("#control_4_block_3").empty();
     for (let i=1;i<=this.value;i++) {
@@ -309,7 +317,7 @@ $('#equation_confirm').click(function() {
     $('#exa_sol_new').prop('disabled', false);
     $('#exa_sol_open').prop('disabled', false);
     $('#exa_sol_save').prop('disabled', false);
-    $('#exa_sol_editor').prop('disabled', false);
+    $('#exa_sol_editor').prop('readonly', false);
     let fd = new FormData();
     fd.append('weights', weights);
     $.ajax('/server11', {
@@ -358,16 +366,9 @@ $("#exa_sol_save").click(function() {
             $('#exa_sol_new').prop('disabled', true);
             $('#exa_sol_open').prop('disabled', true);
             $('#exa_sol_save').prop('disabled', true);
-            $('#exa_sol_editor').prop('disabled', true);
-            $('#new_layer_num').prop('disabled', false);
-            $('#new_layer_add').prop('disabled', false);
-            $('#new_layer_sub').prop('disabled', false);
-            $('#epoch_num').prop('disabled', false);
-            $('#steps_num').prop('disabled', false);
-            $('#optimizer_sel').prop('disabled', false);
-            $('#learning_rate_num').prop('disabled', false);
-            $('#actv_func').prop('disabled', false);
-            $('#start_train').prop('disabled', false);
+            $('#exa_sol_editor').prop('readonly', true);
+            $('#save_proj_text').prop('disabled', false);
+            $('#save_proj_bttn').prop('disabled', false);
         } else {
             alert('Invalid code!');
         }
@@ -448,6 +449,8 @@ $("#start_train").click(function() {
 });
 
 $("#save_proj_bttn").click(function() {
+    $('#save_proj_text').prop('disabled', false);
+    $('#save_proj_bttn').prop('disabled', false);
     let fd = new FormData();
     fd.append('proj_name', $('#save_proj_text').val());
     $.ajax('/server12', {
@@ -457,7 +460,82 @@ $("#save_proj_bttn").click(function() {
         contentType: false,
         cache: false,
     }).done(function(data) {
-        console.log(data);
+        $('#new_layer_num').prop('disabled', false);
+        $('#new_layer_add').prop('disabled', false);
+        $('#new_layer_sub').prop('disabled', false);
+        $('#epoch_num').prop('disabled', false);
+        $('#steps_num').prop('disabled', false);
+        $('#optimizer_sel').prop('disabled', false);
+        $('#learning_rate_num').prop('disabled', false);
+        $('#actv_func').prop('disabled', false);
+        $('#start_train').prop('disabled', false);
+    });
+});
+
+var wait_proj_timer
+$("#load_proj_bttn").click(function() {
+    let fd = new FormData();
+    fd.append('proj_id', $("#load_proj_slct option:selected").val());
+    $.ajax('/server13', {
+        type: 'post',
+        data: fd,
+        processData: false,
+        contentType: false,
+        cache: false,
+    }).done(function(data) {
+        $('#select_PDE_input').val(data['input']);
+        $('#select_PDE_input').trigger('change');
+        $('#select_PDE_output').val(data['output']);
+        $('#select_PDE_output').trigger('change');
+        $('#select_PDE_parameter').val(data['parameter']);
+        $('#select_PDE_parameter').trigger('change');
+        $("#select_csv_").prop('disabled', true);
+        $("#upload_csv").prop('disabled', true);
+        $('#analyze_csv').trigger('click');
+        data['derivative'].forEach(d => {
+            $('#derivative_1').val(d[0]);
+            $('#derivative_2').val(d[1]);
+            $('#derivative_add').trigger('click');
+        });
+        data['equation'].forEach(d => {
+            $('#new_equation').val(d);
+            $('#equation_add').trigger('click');
+        });
+        data['weight'].forEach((d, i) => {
+            wait_proj_timer = setInterval(() => {
+                if ($('#PDE' + String(i+1) + '_w_num').val()) {
+                    clearInterval(wait_proj_timer);
+                    console.log($('#PDE' + String(i+1) + '_w_num').val())
+                    $('#PDE' + String(i+1) + '_w_num').val(d);
+                }
+            }, 100);
+        });
+        $('#equation_confirm').trigger('click');
+        $("#exa_sol_editor").val(data.exa_sol);
+        $('#exa_sol_new').prop('disabled', true);
+        $('#exa_sol_open').prop('disabled', true);
+        $('#exa_sol_save').prop('disabled', true);
+        $('#exa_sol_editor').prop('readonly', true);
+        $('#new_layer_num').prop('disabled', false);
+        $('#new_layer_add').prop('disabled', false);
+        $('#new_layer_sub').prop('disabled', false);
+        $('#epoch_num').prop('disabled', false);
+        $('#steps_num').prop('disabled', false);
+        $('#optimizer_sel').prop('disabled', false);
+        $('#learning_rate_num').prop('disabled', false);
+        $('#actv_func').prop('disabled', false);
+        $('#start_train').prop('disabled', false);
+    });
+})
+
+$.ajax('/server14', {
+    type: 'post',
+    processData: false,
+    contentType: false,
+    cache: false,
+}).done(function(data) {
+    data.forEach(d => {
+        $("#load_proj_slct").append($('<option>').attr('value', String(d[0])).text(d[1]));
     });
 });
 

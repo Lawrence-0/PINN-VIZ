@@ -19,8 +19,10 @@
     <body>
         <div class="part_outside" id="control_part">
             <div class="part_title">SETTING</div>
-            <input type="text" id="save_proj_text">
-            <button id="save_proj_bttn" type="button">Save Project</button>
+            <select id="load_proj_slct"></select>
+            <button id="load_proj_bttn" type="button">Load Project</button>
+            <input type="text" id="save_proj_text" disabled="true">
+            <button id="save_proj_bttn" type="button" disabled="true">Save Project</button>
             <div id="control_1">
                 <div class="module_inside">
                     <div class="control_1_block" id="control_1_block_1">
@@ -168,7 +170,7 @@
                         </div>
                     </div>
                     <div id="exa_sol_edit">
-                        <textarea id="exa_sol_editor" disabled="true"></textarea>
+                        <textarea id="exa_sol_editor" readonly="true"></textarea>
                     </div>
                 </div>
             </div>

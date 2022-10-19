@@ -109,4 +109,4 @@ def model_train(PDE_vars, csv_path, code, layers, epochs, steps_per_epoch, optim
         jsonFile.write(jsonString)
         jsonFile.close()
         
-        return tt_loss
+        return tt_loss[-1]

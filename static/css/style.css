@@ -825,6 +825,8 @@
     overflow-y: scroll;
     white-space: pre-line;
     overflow-x: scroll;
+    display: inline-block;
+    white-space: nowrap;
 }
 #save_proj_text {
     position: absolute;
@@ -840,9 +842,26 @@
     height: 24px;
     width: 100px;
 }
+#load_proj_slct {
+    position: absolute;
+    left: 6px;
+    top: 6px;
+    height: 24px;
+    width: 150px;
+}
+#load_proj_bttn {
+    position: absolute;
+    left: 159px;
+    top: 6px;
+    height: 24px;
+    width: 100px;
+}
+
 
 th,td {
     border: solid 1px;
+    word-break: keep-all;
+    white-space: nowrap;
 }
 table {
     border-collapse: collapse;

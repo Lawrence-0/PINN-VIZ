@@ -5,6 +5,8 @@ import time
 import os
 import pandas as pd
 import importlib
+import shutil
+import sqlite3
 import logging
 flask_log = logging.getLogger('werkzeug')
 flask_log.disabled = True
@@ -53,6 +55,8 @@ def index():
     Hyper_settings['optimizer'] = 'Adam'
     Hyper_settings['learning_rate'] = '0.001'
     Hyper_settings['activation_functions'] = []
+    Project_settings['derivative'] = []
+    Project_settings['equation'] = []
     return render_template("index.html", reload = time.time())
 
 @app.route('/server_log', methods=['POST', 'GET'])
@@ -86,7 +90,7 @@ def server2():
 def server3():
     if request.method == 'POST':
         request.files.get('upfile').save(os.path.join('temp', 'data.csv'))
-        if check_csv(PDE_type , './temp/data.csv'):
+        if check_csv(PDE_type, './temp/data.csv'):
             return "good"
         else:
             return "bad"
@@ -224,3 +228,26 @@ def server12():
         jsonFile.write(jsonString)
         jsonFile.close()
         return request.form.get('proj_name')
+
+@app.route('/server13', methods=['POST', 'GET'])
+def server13():
+    if request.method == 'POST':
+        proj_path = "./projects/project_" + request.form.get('proj_id') + "/"
+        with open(proj_path + "config.json", 'r') as f:
+            proj_config = json.load(f)
+        shutil.copyfile(proj_path + "data.csv", "./temp/data.csv")
+        shutil.copyfile(proj_path + "exa_sol.py", "./temp/exa_sol.py")
+        with open('./temp/exa_sol.py', 'r') as f:
+            proj_config['exa_sol'] = f.read()
+        return proj_config
+    
+@app.route('/server14', methods=['POST', 'GET'])
+def server14():
+    if request.method == 'POST':
+        conn = sqlite3.connect('./projects/projects.db')
+        c = conn.cursor()
+        cursor = c.execute("SELECT ID, NAME from PROJECTS")
+        rst = []
+        for row in cursor:
+            rst.append([row[0], row[1]])
+        return rst
