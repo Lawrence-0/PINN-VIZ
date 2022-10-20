@@ -10,6 +10,7 @@ function parallel_line(container, data) {
         num_line = data.length;
         num_axis = d3.max(data.map(d => d.length));
         max_neur = d3.max(data.map(d => d.slice(0,-1)).flat())
+        console.log(data.map(d => d.slice(0,-1)).flat());
         var xScale = d3.scaleLinear()
                         .domain([0, num_axis+1])
                         .range([60, svg_width-100]);

@@ -567,7 +567,7 @@ $.ajax('/server14', {
     contentType: false,
     cache: false,
 }).done(function(data) {
-    data.forEach(d => {
+    data['data'].forEach(d => {
         $("#load_proj_slct").append($('<option>').attr('value', String(d[0])).text(d[1]));
     });
 });
@@ -626,7 +626,7 @@ function refresh_mdl_db() {
                         contentType: false,
                         cache: false,
                     }).done(function(data) {
-                        parallel_line(d3.select("#overview_3_container"), data);
+                        parallel_line(d3.select("#overview_3_container"), data['data']);
                     });
                 } else {
                     let fd = new FormData();
@@ -639,7 +639,7 @@ function refresh_mdl_db() {
                         contentType: false,
                         cache: false,
                     }).done(function(data) {
-                        parallel_line(d3.select("#overview_3_container"), data);
+                        parallel_line(d3.select("#overview_3_container"), data['data']);
                     });
                 }
             });

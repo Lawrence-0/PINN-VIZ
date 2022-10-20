@@ -227,7 +227,7 @@ def server10():
         shutil.copyfile("./temp/data2.json", model_path + "data2.json")
         conn.commit()
         conn.close()
-        return model_info
+        return {'data': model_info}
     
 @app.route('/server11', methods=['POST', 'GET'])
 def server11():
@@ -297,7 +297,7 @@ def server14():
             rst.append([row[0], row[1]])
         conn.commit()
         conn.close()
-        return rst
+        return {'data': rst}
     
 @app.route('/server15', methods=['POST', 'GET'])
 def server15():
@@ -343,7 +343,7 @@ def server17():
         cursor = c.execute("SELECT MODEL, STRUCTURE, FINAL_LOSS from MODELS")
         for row in cursor:
             if row[0] in Para_Axis['model_id']:
-                model_pa.append([x[:x.index('(')] for x in row[1].split('=>')[1:-1]] + [float(row[2])])
+                model_pa.append([int(x[:x.index('(')]) for x in row[1].split('=>')[1:-1]] + [float(row[2])])
         conn.commit()
         conn.close()
-        return model_pa
+        return {'data': model_pa}
