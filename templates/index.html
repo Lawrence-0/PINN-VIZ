@@ -15,6 +15,7 @@
         <script src="./static/js/loss_epoch.js?r={{reload}}"></script>
         <script src="./static/js/parallel_line.js?r={{reload}}"></script>
         <script src="./static/js/show_csv.js?r={{reload}}"></script>
+        <script src="./static/js/mdl2pnt.js?r={{reload}}"></script>
     </head>
     <body>
         <div class="part_outside" id="control_part">
@@ -259,52 +260,21 @@
             </div>
             <div id="overview_1">
                 <div class="module_inside">
-                    <div id="database_show"><table id="myTable"><tbody>
-                            <tr>
-                                <th></th>
-                                <th onclick="sortTable(1)">&nbsp;&nbsp;Model&nbsp;&nbsp;</th>
-                                <th onclick="sortTable(2)">&nbsp;&nbsp;Structure&nbsp;&nbsp;</th>
-                                <th onclick="sortTable(3)">&nbsp;&nbsp;Epochs&nbsp;&nbsp;</th>
-                                <th onclick="sortTable(4)">&nbsp;&nbsp;Steps per Epoch&nbsp;&nbsp;</th>
-                                <th onclick="sortTable(5)">&nbsp;&nbsp;Optimizer&nbsp;&nbsp;</th>
-                                <th onclick="sortTable(6)">&nbsp;&nbsp;Learning Rate&nbsp;&nbsp;</th>
-                                <th onclick="sortTable(7)">&nbsp;&nbsp;Final Loss&nbsp;&nbsp;</th>
-                            </tr>
-                            <tr>
-                                <td><input type="checkbox" id="model1" name="model1" style="zoom:70%;"></td>
-                                <td>001</td>
-                                <td>4=>30(relu)=>30(relu)=>30(relu)=>1</td>
-                                <td>50</td>
-                                <td>100</td>
-                                <td>Adam</td>
-                                <td>0.001</td>
-                                <td>0.00123</td>
-                            </tr>
-                            <tr>
-                                <td><input type="checkbox" id="model2" name="model2" style="zoom:70%;"></td>
-                                <td>002</td>
-                                <td>4=>50(relu)=>50(relu)=>50(relu)=>1</td>
-                                <td>30</td>
-                                <td>100</td>
-                                <td>Adam</td>
-                                <td>0.001</td>
-                                <td>0.00321</td>
-                            </tr>
-                        </tbody></table>
+                    <div id="database_show"><table id="myTable"><tbody></tbody></table>
                     </div>
                 </div>
             </div>
             <div id="overview_2">
-                <div class="module_inside"></div>
+                <div class="module_inside" id="overview_2_container"></div>
             </div>
             <div id="overview_3">
                 <div class="module_inside" id="overview_3_container"></div>
-                <button id="show_overview_3" style="position:relative;z-index:50"> show </button>
             </div>
         </div>
         <div class="part_outside" id="detail_part">
             <div class="part_title">DETAIL</div>
-            <button id="show_detail_2" style="position:relative;z-index:50;float:left"> show </button>
+            <select id="load_model_slct"></select>
+            <button id="load_model_bttn" type="button">Load Model</button>
             <div id="detail_1">
                 <div class="module_inside" id="detail_1_container"></div>
             </div>

@@ -1,5 +1,6 @@
 function parallel_line(container, data) {
     container.select("svg").remove();
+    if (data.length==0) return ;
     const svg = container.append("svg")
                 .attr("width", '100%')
                 .attr("height", '100%');

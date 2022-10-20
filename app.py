@@ -1,4 +1,5 @@
 from flask import  Flask, jsonify, render_template, request
+from sklearn.manifold import TSNE
 import random
 import json
 import time
@@ -32,7 +33,9 @@ Hyper_settings = {'layers': [1, 1],
                   'learning_rate': '0.001',
                   'activation_functions': []}
 Project_settings = {'derivative': [],
-                    'equation': []}
+                    'equation': [],
+                    'proj_name': ''}
+Para_Axis = {'model_id': []}
 
 
 @app.after_request
@@ -57,6 +60,7 @@ def index():
     Hyper_settings['activation_functions'] = []
     Project_settings['derivative'] = []
     Project_settings['equation'] = []
+    Project_settings['proj_name'] = ''
     return render_template("index.html", reload = time.time())
 
 @app.route('/server_log', methods=['POST', 'GET'])
@@ -206,8 +210,24 @@ def server10():
         Hyper_settings['optimizer'] = request.form.get('optimizer_sel')
         Hyper_settings['learning_rate'] = request.form.get('learning_rate_num')
         Hyper_settings['activation_functions'] = request.form.get('actv_funcs').split(',')
-        model_train(PDE_vars['PDE_vars'], './temp/data.csv', pde_code(PDE_vars['PDE_vars'], PDE_vars['PDE_equs'], PDE_vars['PDE_wgts']), Hyper_settings['layers'], int(Hyper_settings['epochs']), int(Hyper_settings['steps']), Hyper_settings['optimizer'], float(Hyper_settings['learning_rate']), Hyper_settings['activation_functions'])
-        return 'good'
+        final_loss = model_train(PDE_vars['PDE_vars'], './temp/data.csv', pde_code(PDE_vars['PDE_vars'], PDE_vars['PDE_equs'], PDE_vars['PDE_wgts']), Hyper_settings['layers'], int(Hyper_settings['epochs']), int(Hyper_settings['steps']), Hyper_settings['optimizer'], float(Hyper_settings['learning_rate']), Hyper_settings['activation_functions'])
+        lyr_str = [str(x) for x in Hyper_settings['layers']]
+        model_stru = lyr_str[0] + '=>' + ('=>').join([lyr_str[i+1] + '(' + Hyper_settings['activation_functions'][i] + ')' for i in range(len(lyr_str) - 2)]) + '=>' + lyr_str[-1]
+        model_info = [model_stru, Hyper_settings['epochs'], Hyper_settings['steps'], Hyper_settings['optimizer'], Hyper_settings['learning_rate'], str(final_loss)]
+        proj_path = './projects/project_' + str(Project_settings['proj_name']) + '/'
+        conn = sqlite3.connect(proj_path + 'models.db')
+        c = conn.cursor()
+        c.execute("INSERT INTO MODELS (STRUCTURE, EPOCHS, STEPS_PER_EPOCH, OPTIMIZER, LEARNING_RATE, FINAL_LOSS) \
+            VALUES ('%s', %s, %s, '%s', %s, %s)" % tuple(model_info))
+        new_id = str(list(c.execute("SELECT MAX(CAST(MODEL as int)) from MODELS"))[0][0])
+        model_path = proj_path + 'model_' + new_id + '/'
+        if not os.path.exists(model_path):
+            os.makedirs(model_path)
+        shutil.copyfile("./temp/data1.json", model_path + "data1.json")
+        shutil.copyfile("./temp/data2.json", model_path + "data2.json")
+        conn.commit()
+        conn.close()
+        return model_info
     
 @app.route('/server11', methods=['POST', 'GET'])
 def server11():
@@ -223,15 +243,40 @@ def server12():
         Project_settings['output'] = PDE_type['output']
         Project_settings['parameter'] = PDE_type['parameter']
         Project_settings['weight'] = PDE_vars['PDE_wgts']
+        conn = sqlite3.connect('./projects/projects.db')
+        c = conn.cursor()
+        c.execute("INSERT INTO PROJECTS (NAME) VALUES ('" + request.form.get('proj_name') + "')")
+        new_id = str(list(c.execute("SELECT MAX(CAST(ID as int)) from PROJECTS"))[0][0])
+        Project_settings['proj_name'] = new_id
+        proj_path = './projects/project_' + new_id + '/'
+        if not os.path.exists(proj_path):
+            os.makedirs(proj_path)
+        conn.commit()
+        conn.close()
         jsonString = json.dumps(Project_settings)
-        jsonFile = open("./temp/config.json", "w")
+        jsonFile = open(proj_path + "config.json", "w")
         jsonFile.write(jsonString)
         jsonFile.close()
+        shutil.copyfile("./temp/data.csv", proj_path + "data.csv")
+        shutil.copyfile("./temp/exa_sol.py", proj_path + "exa_sol.py")
+        conn = sqlite3.connect(proj_path + 'models.db')
+        c = conn.cursor()
+        c.execute('''CREATE TABLE MODELS
+            (MODEL INTEGER PRIMARY KEY AUTOINCREMENT,
+            STRUCTURE TEXT NOT NULL,
+            EPOCHS INTEGER NOT NULL,
+            STEPS_PER_EPOCH INTEGER NOT NULL,
+            OPTIMIZER TEXT NOT NULL,
+            LEARNING_RATE REAL NOT NULL,
+            FINAL_LOSS REAL NOT NULL);''')
+        conn.commit()
+        conn.close()
         return request.form.get('proj_name')
 
 @app.route('/server13', methods=['POST', 'GET'])
 def server13():
     if request.method == 'POST':
+        Project_settings['proj_name'] = request.form.get('proj_id')
         proj_path = "./projects/project_" + request.form.get('proj_id') + "/"
         with open(proj_path + "config.json", 'r') as f:
             proj_config = json.load(f)
@@ -250,4 +295,55 @@ def server14():
         rst = []
         for row in cursor:
             rst.append([row[0], row[1]])
+        conn.commit()
+        conn.close()
         return rst
+    
+@app.route('/server15', methods=['POST', 'GET'])
+def server15():
+    if request.method == 'POST':
+        conn = sqlite3.connect('./projects/project_' + str(Project_settings['proj_name']) + '/models.db')
+        c = conn.cursor()
+        models_db = []
+        lst_tnse = []
+        cursor = c.execute("SELECT MODEL, STRUCTURE, EPOCHS, STEPS_PER_EPOCH, OPTIMIZER, LEARNING_RATE, FINAL_LOSS from MODELS")
+        for row in cursor:
+            models_db.append([str(x) for x in list(row)])
+            lst_tnse.append([x[:x.index('(')] for x in row[1].split('=>')[1:-1]])
+        id_len = max([len(x[0]) for x in models_db])
+        for i in range(len(models_db)):
+            models_db[i][0] = '0' * (id_len - len(models_db[i][0])) + models_db[i][0]
+        conn.commit()
+        conn.close()
+        lst_tnse = TSNE(n_components=2,random_state=33).fit_transform(lst_tnse).tolist()
+        lst_tnse = [lst_tnse[i] + [float(models_db[i][-1])] for i in range(len(lst_tnse))]
+        return {'data': models_db, 'data2': lst_tnse}
+    
+@app.route('/server16', methods=['POST', 'GET'])
+def server16():
+    if request.method == 'POST':
+        proj_path = './projects/project_' + str(Project_settings['proj_name']) + '/'
+        model_path = proj_path + 'model_' + request.form.get('model_id') + '/'
+        with open(model_path + 'data1.json',"r") as f:
+            data1 = json.load(f)
+        with open(model_path + 'data2.json',"r") as f:
+            data2 = json.load(f)
+        return jsonify({"epoch": len(data2), "data1": data1, "data2": data2})
+    
+@app.route('/server17', methods=['POST', 'GET'])
+def server17():
+    if request.method == 'POST':
+        if request.form.get('pa_act') == 'add':
+            Para_Axis['model_id'].append(int(request.form.get('model_id')))
+        else:
+            Para_Axis['model_id'].remove(int(request.form.get('model_id')))
+        conn = sqlite3.connect('./projects/project_' + str(Project_settings['proj_name']) + '/models.db')
+        c = conn.cursor()
+        model_pa = []
+        cursor = c.execute("SELECT MODEL, STRUCTURE, FINAL_LOSS from MODELS")
+        for row in cursor:
+            if row[0] in Para_Axis['model_id']:
+                model_pa.append([x[:x.index('(')] for x in row[1].split('=>')[1:-1]] + [float(row[2])])
+        conn.commit()
+        conn.close()
+        return model_pa

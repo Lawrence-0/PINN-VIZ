@@ -855,6 +855,19 @@
     top: 6px;
     height: 24px;
     width: 100px;
+}#load_model_slct {
+    position: absolute;
+    left: 6px;
+    top: 6px;
+    height: 24px;
+    width: 150px;
+}
+#load_model_bttn {
+    position: absolute;
+    left: 159px;
+    top: 6px;
+    height: 24px;
+    width: 100px;
 }
 
 

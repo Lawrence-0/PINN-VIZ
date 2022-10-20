@@ -445,6 +445,8 @@ $("#start_train").click(function() {
         processData: false,
         contentType: false,
         cache: false,
+    }).done(function(data) {
+        refresh_mdl_db();
     });
 });
 
@@ -469,6 +471,8 @@ $("#save_proj_bttn").click(function() {
         $('#learning_rate_num').prop('disabled', false);
         $('#actv_func').prop('disabled', false);
         $('#start_train').prop('disabled', false);
+        $('#save_proj_text').prop('disabled', true);
+        $('#save_proj_bttn').prop('disabled', true);
     });
 });
 
@@ -510,23 +514,52 @@ $("#load_proj_bttn").click(function() {
                 }
             }, 100);
         });
-        $('#equation_confirm').trigger('click');
-        $("#exa_sol_editor").val(data.exa_sol);
-        $('#exa_sol_new').prop('disabled', true);
-        $('#exa_sol_open').prop('disabled', true);
-        $('#exa_sol_save').prop('disabled', true);
-        $('#exa_sol_editor').prop('readonly', true);
-        $('#new_layer_num').prop('disabled', false);
-        $('#new_layer_add').prop('disabled', false);
-        $('#new_layer_sub').prop('disabled', false);
-        $('#epoch_num').prop('disabled', false);
-        $('#steps_num').prop('disabled', false);
-        $('#optimizer_sel').prop('disabled', false);
-        $('#learning_rate_num').prop('disabled', false);
-        $('#actv_func').prop('disabled', false);
-        $('#start_train').prop('disabled', false);
+        wait_py_timer = setInterval(() => {
+            if ($('#PDE' + String(data['weight'].length) + '_w_num').val()) {
+                clearInterval(wait_py_timer);
+                $('#equation_confirm').trigger('click');
+                $("#exa_sol_editor").val(data.exa_sol);
+                $('#exa_sol_new').prop('disabled', true);
+                $('#exa_sol_open').prop('disabled', true);
+                $('#exa_sol_save').prop('disabled', true);
+                $('#exa_sol_editor').prop('readonly', true);
+                $('#new_layer_num').prop('disabled', false);
+                $('#new_layer_add').prop('disabled', false);
+                $('#new_layer_sub').prop('disabled', false);
+                $('#epoch_num').prop('disabled', false);
+                $('#steps_num').prop('disabled', false);
+                $('#optimizer_sel').prop('disabled', false);
+                $('#learning_rate_num').prop('disabled', false);
+                $('#actv_func').prop('disabled', false);
+                $('#start_train').prop('disabled', false);
+            }
+        }, 100);
+        refresh_mdl_db();
     });
-})
+});
+
+$('#load_model_bttn').click(function() {
+    let fd = new FormData();
+    fd.append('model_id', $("#load_model_slct option:selected").val());
+    $.ajax('/server16', {
+        type: 'post',
+        data: fd,
+        processData: false,
+        contentType: false,
+        cache: false,
+    }).done(function(data) {
+        sliders = detail_slider(d3.select("#detail_1_container"), data["epoch"]);
+        network_structure(d3.select("#detail_2_container"), data["data1"], sliders[0]);
+        slider__ = loss_epoch(d3.select("#detail_3_container"), data["data2"], sliders[1]);
+        console.log(slider__);
+    });
+});
+
+
+
+
+
+
 
 $.ajax('/server14', {
     type: 'post',
@@ -545,6 +578,80 @@ $.ajax('/server14', {
 
 
 
+
+function refresh_mdl_db() {
+    $.ajax('/server15', {
+        type: 'post',
+        processData: false,
+        contentType: false,
+        cache: false,
+    }).done(function(data_all) {
+        data = data_all.data;
+        data2 = data_all.data2;
+        $('#database_show tbody').empty();
+        $(`
+        <tr>
+            <th></th>
+            <th onclick="sortTable(1)">&nbsp;&nbsp;Model&nbsp;&nbsp;</th>
+            <th onclick="sortTable(2)">&nbsp;&nbsp;Structure&nbsp;&nbsp;</th>
+            <th onclick="sortTable(3)">&nbsp;&nbsp;Epochs&nbsp;&nbsp;</th>
+            <th onclick="sortTable(4)">&nbsp;&nbsp;Steps per Epoch&nbsp;&nbsp;</th>
+            <th onclick="sortTable(5)">&nbsp;&nbsp;Optimizer&nbsp;&nbsp;</th>
+            <th onclick="sortTable(6)">&nbsp;&nbsp;Learning Rate&nbsp;&nbsp;</th>
+            <th onclick="sortTable(7)">&nbsp;&nbsp;Final Loss&nbsp;&nbsp;</th>
+        </tr>
+        `).appendTo($('#database_show tbody'));
+        data.forEach(d => {
+            $(`
+            <tr>
+                <td><input type="checkbox" id="model${String(parseInt(d[0]))}" name="model${String(parseInt(d[0]))}" style="zoom:70%;"></td>
+                <td>${d[0]}</td>
+                <td>${d[1]}</td>
+                <td>${d[2]}</td>
+                <td>${d[3]}</td>
+                <td>${d[4]}</td>
+                <td>${d[5]}</td>
+                <td>${d[6]}</td>
+            </tr>
+            `).appendTo($('#database_show tbody'));
+            $(`#model${String(parseInt(d[0]))}`).change(function() {
+                if (this.checked) {
+                    let fd = new FormData();
+                    fd.append('pa_act', 'add');
+                    fd.append('model_id', this.name.slice(5));
+                    $.ajax('/server17', {
+                        type: 'post',
+                        data: fd,
+                        processData: false,
+                        contentType: false,
+                        cache: false,
+                    }).done(function(data) {
+                        parallel_line(d3.select("#overview_3_container"), data);
+                    });
+                } else {
+                    let fd = new FormData();
+                    fd.append('pa_act', 'sub');
+                    fd.append('model_id', this.name.slice(5));
+                    $.ajax('/server17', {
+                        type: 'post',
+                        data: fd,
+                        processData: false,
+                        contentType: false,
+                        cache: false,
+                    }).done(function(data) {
+                        parallel_line(d3.select("#overview_3_container"), data);
+                    });
+                }
+            });
+        });
+        $("#load_model_slct").empty();
+        data.forEach(d => {
+            $("#load_model_slct").append($('<option>').attr('value', String(parseInt(d[0]))).text('model' + String(parseInt(d[0]))));
+        });
+        console.log(data2)
+        mdl2pnt(d3.select('#overview_2_container'), data2);
+    });
+}
 
 
 function sortTable(n) {
