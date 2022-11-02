@@ -315,7 +315,10 @@ def server15():
             models_db[i][0] = '0' * (id_len - len(models_db[i][0])) + models_db[i][0]
         conn.commit()
         conn.close()
+        depth_max = max([len(x) for x in lst_tnse])
+        lst_tnse = [[0 for _ in range(depth_max - len(x))] + x for x in lst_tnse]
         lst_tnse = TSNE(n_components=2,random_state=33).fit_transform(lst_tnse).tolist()
+        
         lst_tnse = [lst_tnse[i] + [float(models_db[i][-1])] for i in range(len(lst_tnse))]
         return {'data': models_db, 'data2': lst_tnse}
     

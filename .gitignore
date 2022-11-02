@@ -19,3 +19,5 @@ temp/data.csv
 temp/data.csv
 temp/data.csv
 *.csv
+*.log
+*.csv
