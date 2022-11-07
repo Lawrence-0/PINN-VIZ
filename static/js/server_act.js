@@ -29,7 +29,7 @@ $("#terminal_switch").click(function() {
                 }
             }, 10);
         });
-        $("#equation_show").css("display", "none");
+        $("#database_show").css("display", "none");
         $("#terminal_view").css("display", "block");
         $("#terminal_bttm").css("display", "block");
         $("#terminal_pause").css("display", "block");
@@ -38,7 +38,7 @@ $("#terminal_switch").click(function() {
         $("#terminal_view").css("display", "none");
         $("#terminal_bttm").css("display", "none");
         $("#terminal_pause").css("display", "none");
-        $("#equation_show").css("display", "block");
+        $("#database_show").css("display", "block");
         clearInterval(log_interval);
         log_play = false;
     }
@@ -577,7 +577,7 @@ $.ajax('/server14', {
 
 
 
-
+var tsne_pnts;
 
 function refresh_mdl_db() {
     $.ajax('/server15', {
@@ -626,7 +626,7 @@ function refresh_mdl_db() {
                         contentType: false,
                         cache: false,
                     }).done(function(data) {
-                        parallel_line(d3.select("#overview_3_container"), data['data']);
+                        parallel_line(d3.select("#overview_3_container"), data, tsne_pnts);
                     });
                 } else {
                     let fd = new FormData();
@@ -639,7 +639,7 @@ function refresh_mdl_db() {
                         contentType: false,
                         cache: false,
                     }).done(function(data) {
-                        parallel_line(d3.select("#overview_3_container"), data['data']);
+                        parallel_line(d3.select("#overview_3_container"), data, tsne_pnts);
                     });
                 }
             });
@@ -649,7 +649,8 @@ function refresh_mdl_db() {
             $("#load_model_slct").append($('<option>').attr('value', String(parseInt(d[0]))).text('model' + String(parseInt(d[0]))));
         });
         console.log(data2)
-        mdl2pnt(d3.select('#overview_2_container'), data2);
+        tsne_pnts = mdl2pnt(d3.select('#overview_2_container'), data2);
+        d3.select("#overview_3_container").select("svg").remove();
     });
 }
 

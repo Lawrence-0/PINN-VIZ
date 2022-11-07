@@ -1,4 +1,9 @@
-function parallel_line(container, data) {
+function parallel_line(container, data_, tsne_pnts) {
+    for (let i=0;i<tsne_pnts.length;i++) {
+        tsne_pnts[i].style("stroke", `rgba(0,0,0,0)`);
+    }
+    id = data_.id;
+    data = data_.data;
     container.select("svg").remove();
     if (data.length==0) return ;
     const svg = container.append("svg")
@@ -117,54 +122,59 @@ function parallel_line(container, data) {
                         .style("stroke-width", 1)
                         .style("stroke", `rgba(${d3.interpolateRainbow(n/num_line).slice(4,-1)},1)`)
                         .on("click", function() {
-                        if (label_0[n][2]=="hidden") {
-                            label_0[n][2]="visible";
-                            label_0[n][1].attr("visibility", "visible");
-                        } else {
-                            label_0[n][2]="hidden";
-                            label_0[n][1].attr("visibility", "hidden");
-                        }
+                            if (label_0[n][2]=="hidden") {
+                                tsne_pnts[id[n]-1].style("stroke", `rgba(${d3.interpolateRainbow(n/num_line).slice(4,-1)},0.5)`);
+                                label_0[n][2]="visible";
+                                label_0[n][1].attr("visibility", "visible");
+                            } else {
+                                tsne_pnts[id[n]-1].style("stroke", `rgba(0,0,0,0)`);
+                                label_0[n][2]="hidden";
+                                label_0[n][1].attr("visibility", "hidden");
+                            }
                         })
                         .on("mouseover", function() {
-                        lns_lst[n][0].attr("stroke", `rgba(${d3.interpolateRainbow(n/num_line).slice(4,-1)},1)`)
-                        .attr("stroke-width", 3);
-                        lns_lst[n][1].attr("stroke", `rgba(${d3.interpolateRainbow(n/num_line).slice(4,-1)},1)`)
-                        .attr("stroke-width", 3);
-                        lns_lst[n][2].forEach(function(p) {
-                            p.attr("visibility", "visible")
-                            .style("stroke", `rgba(${d3.interpolateRainbow(n/num_line).slice(4,-1)},1)`)
-                        });
-                        info_tmp = "Error: ";
-                        info_tmp += datum[datum.length-1].toExponential(2) + "; Hidden layers (" + String(datum.length-1) + "): ";
-                        datum.slice(0,-2).forEach(function(dtm) {
-                            info_tmp += String(dtm) + ' => ';
-                        })
-                        info_tmp += String(datum[datum.length-2]) + ".";
-                        info_show.text(info_tmp)
-                        .style('fill', `rgba(${d3.interpolateRainbow(n/num_line).slice(4,-1)},1)`);
-                        })
-                        .on("mouseout", function() {
-                        if (label_0[n][2]=="hidden") {
-                            lns_lst[n][0].attr("stroke", `rgba(${d3.interpolateRainbow(n/num_line).slice(4,-1)},0.2)`)
-                            .attr("stroke-width", 1);
-                            lns_lst[n][1].attr("stroke", `rgba(${d3.interpolateRainbow(n/num_line).slice(4,-1)},0.2)`)
-                            .attr("stroke-width", 1);
-                            lns_lst[n][2].forEach(function(p) {
-                                p.attr("visibility", "hidden")
-                                .style("stroke", `rgba(${d3.interpolateRainbow(n/num_line).slice(4,-1)},0.5)`)
-                            })
-                        } else {
-                            lns_lst[n][0].attr("stroke", `rgba(${d3.interpolateRainbow(n/num_line).slice(4,-1)},0.5)`)
+                            tsne_pnts[id[n]-1].style("stroke", `rgba(${d3.interpolateRainbow(n/num_line).slice(4,-1)},1)`);
+                            lns_lst[n][0].attr("stroke", `rgba(${d3.interpolateRainbow(n/num_line).slice(4,-1)},1)`)
                             .attr("stroke-width", 3);
-                            lns_lst[n][1].attr("stroke", `rgba(${d3.interpolateRainbow(n/num_line).slice(4,-1)},0.5)`)
+                            lns_lst[n][1].attr("stroke", `rgba(${d3.interpolateRainbow(n/num_line).slice(4,-1)},1)`)
                             .attr("stroke-width", 3);
                             lns_lst[n][2].forEach(function(p) {
                                 p.attr("visibility", "visible")
-                                .style("stroke", `rgba(${d3.interpolateRainbow(n/num_line).slice(4,-1)},0.5)`)
+                                .style("stroke", `rgba(${d3.interpolateRainbow(n/num_line).slice(4,-1)},1)`)
+                            });
+                            info_tmp = "Error: ";
+                            info_tmp += datum[datum.length-1].toExponential(2) + "; Hidden layers (" + String(datum.length-1) + "): ";
+                            datum.slice(0,-2).forEach(function(dtm) {
+                                info_tmp += String(dtm) + ' => ';
                             })
-                        }
-                        info_show.text("");
+                            info_tmp += String(datum[datum.length-2]) + ".";
+                            info_show.text(info_tmp)
+                            .style('fill', `rgba(${d3.interpolateRainbow(n/num_line).slice(4,-1)},1)`);
                         })
+                        .on("mouseout", function() {
+                            if (label_0[n][2]=="hidden") {
+                                tsne_pnts[id[n]-1].style("stroke", `rgba(0,0,0,0)`);
+                                lns_lst[n][0].attr("stroke", `rgba(${d3.interpolateRainbow(n/num_line).slice(4,-1)},0.2)`)
+                                .attr("stroke-width", 1);
+                                lns_lst[n][1].attr("stroke", `rgba(${d3.interpolateRainbow(n/num_line).slice(4,-1)},0.2)`)
+                                .attr("stroke-width", 1);
+                                lns_lst[n][2].forEach(function(p) {
+                                    p.attr("visibility", "hidden")
+                                    .style("stroke", `rgba(${d3.interpolateRainbow(n/num_line).slice(4,-1)},0.5)`)
+                                });
+                            } else {
+                                tsne_pnts[id[n]-1].style("stroke", `rgba(${d3.interpolateRainbow(n/num_line).slice(4,-1)},0.5)`);
+                                lns_lst[n][0].attr("stroke", `rgba(${d3.interpolateRainbow(n/num_line).slice(4,-1)},0.5)`)
+                                .attr("stroke-width", 3);
+                                lns_lst[n][1].attr("stroke", `rgba(${d3.interpolateRainbow(n/num_line).slice(4,-1)},0.5)`)
+                                .attr("stroke-width", 3);
+                                lns_lst[n][2].forEach(function(p) {
+                                    p.attr("visibility", "visible")
+                                    .style("stroke", `rgba(${d3.interpolateRainbow(n/num_line).slice(4,-1)},0.5)`)
+                                });
+                            }
+                            info_show.text("");
+                        });
             pnt_tmp = svg_tmp.append("circle")
                         .attr("visibility", "hidden")
                         .attr("cx", pos_x)

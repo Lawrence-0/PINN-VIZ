@@ -61,6 +61,7 @@ def index():
     Project_settings['derivative'] = []
     Project_settings['equation'] = []
     Project_settings['proj_name'] = ''
+    Para_Axis['model_id'] = []
     return render_template("index.html", reload = time.time())
 
 @app.route('/server_log', methods=['POST', 'GET'])
@@ -302,6 +303,7 @@ def server14():
 @app.route('/server15', methods=['POST', 'GET'])
 def server15():
     if request.method == 'POST':
+        Para_Axis['model_id'] = []
         conn = sqlite3.connect('./projects/project_' + str(Project_settings['proj_name']) + '/models.db')
         c = conn.cursor()
         models_db = []
@@ -318,7 +320,6 @@ def server15():
         depth_max = max([len(x) for x in lst_tnse])
         lst_tnse = [[0 for _ in range(depth_max - len(x))] + x for x in lst_tnse]
         lst_tnse = TSNE(n_components=2,random_state=33).fit_transform(lst_tnse).tolist()
-        
         lst_tnse = [lst_tnse[i] + [float(models_db[i][-1])] for i in range(len(lst_tnse))]
         return {'data': models_db, 'data2': lst_tnse}
     
@@ -349,4 +350,4 @@ def server17():
                 model_pa.append([int(x[:x.index('(')]) for x in row[1].split('=>')[1:-1]] + [float(row[2])])
         conn.commit()
         conn.close()
-        return {'data': model_pa}
+        return {'data': model_pa, 'id': sorted(Para_Axis['model_id'])}
