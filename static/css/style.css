@@ -869,6 +869,83 @@
     height: 24px;
     width: 100px;
 }
+#result_parameter {
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: 100px;
+}
+#result_predict {
+    position: absolute;
+    left: 100px;
+    top: 0;
+    height: 45px;
+    width: 100px;
+    border-right: solid 3px #555590;
+    border-bottom: solid 3px #555590;
+}
+#result_input {
+    position: absolute;
+    left: 100px;
+    top: 45px;
+    height: 35px;
+    width: 100px;
+    border-left: solid 3px #555590;
+    border-bottom: solid 3px #555590;
+}
+#result_error_dist {
+    position: absolute;
+    left: 200px;
+    top: 0;
+    right: 0;
+    height: 80px;
+    border-bottom: solid 3px #555590;
+}
+#result_show {
+    position: absolute;
+    left: 100px;
+    top: 80px;
+    right: 0;
+    bottom: 0;
+}
+#result_exp {
+    position: absolute;
+    width: 33%;
+    height: 100%;
+    border-left: solid 3px #555590;
+    left: 0;
+}
+#result_std {
+    position: absolute;
+    width: 33%;
+    height: 100%;
+    border-left: solid 3px #555590;
+    left: 33%;
+}
+#result_err {
+    position: absolute;
+    width: 33%;
+    height: 100%;
+    border-left: solid 3px #555590;
+    right: 0;
+}
+#rst_predict {
+    position: absolute;
+    left: 7px;
+    top: 7px;
+    right: 7px;
+    bottom: 7px;
+}
+#rst_input {
+    position: absolute;
+    left: 7px;
+    top: 10px;
+    right: 7px;
+    bottom: 7px;
+    text-align: center;
+    text-align-last: center;
+}
 
 
 
