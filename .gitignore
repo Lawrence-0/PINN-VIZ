@@ -22,3 +22,5 @@ temp/data.csv
 *.log
 *.csv
 *.pyc
+*.csv
+*.log

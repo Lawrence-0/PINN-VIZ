@@ -946,6 +946,24 @@
     text-align: center;
     text-align-last: center;
 }
+#para_predict {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    overflow-y: scroll;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    display: block;
+    font-size: 13px;
+    text-align: center;
+    text-align-last: center;
+}
 
 
 

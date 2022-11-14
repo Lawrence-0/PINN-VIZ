@@ -274,9 +274,12 @@ $("#select_PDE_parameter").change(function(){
     $('#load_proj_bttn').prop('disabled', true);
     $("#control_1_subblock_32").empty();
     $("#control_4_block_3").empty();
+    $("#para_predict").empty();
     for (let i=1;i<=this.value;i++) {
         $('<div class="elems">Parameter' + String(i) + '</div>').appendTo($("#control_1_subblock_32"));
         $('<div class="sht_elems">P' + String(i) + '</div>').appendTo($("#control_4_block_3"));
+        $('<span>Parameter' + String(i) + '</span>').appendTo($("#para_predict"));
+        $('<input type="number" id="para_pdt' + String(i) + '" style="width: 90%;" disabled>').appendTo($("#para_predict"));
     }
     $.ajax({
         url:"/server4?parameter=" + String(this.value),
@@ -552,6 +555,9 @@ $('#load_model_bttn').click(function() {
         network_structure(d3.select("#detail_2_container"), data["data1"], sliders[0]);
         slider__ = loss_epoch(d3.select("#detail_3_container"), data["data2"], sliders[1]);
         console.log(slider__);
+        $('#para_predict').children('input').prop('disabled', false);
+        $('#rst_predict').prop('disabled', false);
+        $('#rst_input').prop('disabled', false);
     });
 });
 
