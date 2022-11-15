@@ -158,13 +158,16 @@ $('#analyze_csv').click(function() {
         method: 'post',
         success: function(data) {
             $("#control_2_block_3").empty();
-            console.log('step1')
+            for (i=1;i<data.para_min_max.length+1;i++) {
+                $('#para_pdt' + String(i)).prop('min', data.para_min_max[i-1][0]);
+                $('#para_pdt' + String(i)).val(data.para_min_max[i-1][0]);
+                $('#para_pdt' + String(i)).prop('max', data.para_min_max[i-1][1]);
+            }
             if (data.in_type=='1DoT' || data.in_type=='1DwT') {
                 show_csv_1d("control_2_block_3", data.rows);
             } else if (data.in_type=='2DoT' || data.in_type=='2DwT') {
                 show_csv_2d("control_2_block_3", data.rows_smp);
             } else if (data.in_type=='3DoT' || data.in_type=='3DwT') {
-                console.log('step2')
                 show_csv_3d("control_2_block_3", data.rows_smp);
             }
             let sel_tmp = $('#select_csv_show');
@@ -220,6 +223,10 @@ $("#select_PDE_input").change(function(){
     sel_tmp.empty();
     new_elems.forEach(function(d) {
         sel_tmp.append($('<option>').attr('value', d).text(d));
+    });
+    $("#rst_input").empty();
+    new_elems.forEach(function(d) {
+        $("#rst_input").append($('<option>').attr('value', d).text(d));
     });
     $.ajax({
         url:"/server4?input=" + sel,

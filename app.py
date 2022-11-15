@@ -124,13 +124,13 @@ def server4():
 def server5():
     if request.method == 'POST':
         PDE_vars['PDE_vars'] = PDE_vars_list(PDE_type)
-        rows = pd.read_csv('./temp/data.csv').to_dict('records')
+        df = pd.read_csv('./temp/data.csv')
+        rows = df.to_dict('records')
         if len(rows) > 10000:
             rows_smp = random.sample(rows, 10000)
         else:
             rows_smp = rows
-        print(PDE_type['input'])
-        return jsonify({'vars': PDE_tp2var(PDE_type, varO=False), 'in_type': PDE_type['input'], 'rows': rows, 'rows_smp': rows_smp})
+        return jsonify({'vars': PDE_tp2var(PDE_type, varO=False), 'in_type': PDE_type['input'], 'rows': rows, 'rows_smp': rows_smp, 'para_min_max': [[min(df.loc[:,x]), max(df.loc[:,x])] for x in PDE_tp2var(PDE_type, varI=False, varO=False)]})
     
 @app.route('/server6', methods=['POST', 'GET'])
 def server6():
