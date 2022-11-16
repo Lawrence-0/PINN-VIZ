@@ -17,6 +17,7 @@ log_len = 0
 # logging.basicConfig(filename='log.log', level=logging.DEBUG)
 from pycode1 import *
 from pycode2 import *
+from pycode3 import *
 
 app = Flask(__name__)
 
@@ -26,7 +27,7 @@ PDE_type = {'input': '1DoT',
 PDE_vars = {'PDE_vars': None,
             'PDE_equs': [],
             'PDE_wgts': []}
-Hyper_settings = {'layers': [1, 1],
+Hyper_settings = {'layers': [2, 1],
                   'epochs': '1',
                   'steps': '1',
                   'optimizer': 'Adam',
@@ -36,6 +37,7 @@ Project_settings = {'derivative': [],
                     'equation': [],
                     'proj_name': ''}
 Para_Axis = {'model_id': []}
+ipts_min_max = {'ipts_min_max': []}
 
 
 @app.after_request
@@ -52,7 +54,7 @@ def index():
     PDE_type['parameter'] = '1'
     PDE_vars['PDE_equs'] = []
     PDE_vars['PDE_vars'] = None
-    Hyper_settings['layers'] = [1, 1]
+    Hyper_settings['layers'] = [2, 1]
     Hyper_settings['epochs'] = '1'
     Hyper_settings['steps'] = '1'
     Hyper_settings['optimizer'] = 'Adam'
@@ -62,6 +64,7 @@ def index():
     Project_settings['equation'] = []
     Project_settings['proj_name'] = ''
     Para_Axis['model_id'] = []
+    ipts_min_max['ipts_min_max'] = []
     return render_template("index.html", reload = time.time())
 
 @app.route('/server_log', methods=['POST', 'GET'])
@@ -75,22 +78,7 @@ def server_log():
                 return {"change": "F"}
             
 
-@app.route('/server1', methods=['POST', 'GET'])
-def server1():
-    if request.method == 'POST':
-        with open('./temps/pa.json',"r") as f:
-            data = json.load(f)
-        return jsonify(data)
-    
-@app.route('/server2', methods=['POST', 'GET'])
-def server2():
-    if request.method == 'POST':
-        with open('./temp/data1.json',"r") as f:
-            data1 = json.load(f)
-        with open('./temp/data2.json',"r") as f:
-            data2 = json.load(f)
-        return jsonify({"epoch": int(Hyper_settings['epochs']), "data1": data1, "data2": data2})
-    
+ 
 @app.route('/server3', methods=['POST', 'GET'])
 def server3():
     if request.method == 'POST':
@@ -111,13 +99,13 @@ def server4():
         if request.args.get('parameter'):
             PDE_type['parameter'] = request.args.get('parameter')
         if PDE_type['input'] == '1DoT':
-            Hyper_settings['layers'] = [1, int(PDE_type['output'])]
+            Hyper_settings['layers'] = [1 + int(PDE_type['parameter']), int(PDE_type['output'])]
         elif PDE_type['input'] == '2DoT' or PDE_type['input'] == '1DwT':
-            Hyper_settings['layers'] = [2, int(PDE_type['output'])]
+            Hyper_settings['layers'] = [2 + int(PDE_type['parameter']), int(PDE_type['output'])]
         elif PDE_type['input'] == '3DoT' or PDE_type['input'] == '2DwT':
-            Hyper_settings['layers'] = [3, int(PDE_type['output'])]
+            Hyper_settings['layers'] = [3 + int(PDE_type['parameter']), int(PDE_type['output'])]
         elif PDE_type['input'] == '3DwT':
-            Hyper_settings['layers'] = [4, int(PDE_type['output'])]
+            Hyper_settings['layers'] = [4 + int(PDE_type['parameter']), int(PDE_type['output'])]
         return {'layers': Hyper_settings['layers']}
 
 @app.route('/server5', methods=['POST', 'GET'])
@@ -130,6 +118,7 @@ def server5():
             rows_smp = random.sample(rows, 10000)
         else:
             rows_smp = rows
+        ipts_min_max['ipts_min_max'] = [[min(df.loc[:,x]), max(df.loc[:,x])] for x in PDE_tp2var(PDE_type, varO=False, varP=False)]
         return jsonify({'vars': PDE_tp2var(PDE_type, varO=False), 'in_type': PDE_type['input'], 'rows': rows, 'rows_smp': rows_smp, 'para_min_max': [[min(df.loc[:,x]), max(df.loc[:,x])] for x in PDE_tp2var(PDE_type, varI=False, varO=False)]})
     
 @app.route('/server6', methods=['POST', 'GET'])
@@ -351,3 +340,23 @@ def server17():
         conn.commit()
         conn.close()
         return {'data': model_pa, 'id': sorted(Para_Axis['model_id'])}
+
+@app.route('/server18', methods=['POST', 'GET'])
+def server18():
+    if request.method == 'POST':
+        paras = [float(x) for x in request.form.get('paras').split(',')]
+        with open('print.txt', 'w') as f:
+            f.write(str(paras))
+        model_id = request.form.get('model_id')
+        model_path = './projects/project_' + str(Project_settings['proj_name']) + '/model_' + model_id + '/'
+        with open(model_path + 'data1.json',"r") as f:
+            data1 = json.load(f)
+        conn = sqlite3.connect('./projects/project_' + str(Project_settings['proj_name']) + '/models.db')
+        c = conn.cursor()
+        cursor = c.execute("SELECT STRUCTURE from MODELS WHERE MODEL = " + model_id)
+        for r in cursor:
+            row = r[0]
+        from temp import exa_sol
+        pdct_data, pdct_rst_flat, pdct_rst, exact_rst_flat, error_rst_flat = model_pdct(data1, row, ipts_min_max['ipts_min_max'], paras, exa_sol.output1)
+        if PDE_type['input'] == '3DwT':
+            return {'PDE_type': '3DwT', 'T': pdct_data[::21*21*21, 0].tolist(), 'X': pdct_data[:21*21*21, 1].tolist(), 'Y': pdct_data[:21*21*21, 2].tolist(), 'Z': pdct_data[:21*21*21, 3].tolist(), 'U_model': pdct_rst_flat.tolist(), 'U_exact': exact_rst_flat.tolist(), 'U_error': error_rst_flat.tolist()}

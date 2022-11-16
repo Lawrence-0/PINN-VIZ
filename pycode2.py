@@ -65,7 +65,7 @@ def model_train(PDE_vars, csv_path, code, layers, epochs, steps_per_epoch, optim
                 return super(PINN, self).call(inputs)
         exec(code, globals())
         mypinn = PINN(pde)
-        mypinn.add(tf.keras.layers.Dense(layers[1], input_shape=(layers[0] + int(PDE_vars.PDE_type['parameter']),), activation=actv_func[0]))
+        mypinn.add(tf.keras.layers.Dense(layers[1], input_shape=(layers[0],), activation=actv_func[0]))
         for i in range(2, len(layers)-1):
             mypinn.add(tf.keras.layers.Dense(layers[i], activation=actv_func[i-1]))
         mypinn.add(tf.keras.layers.Dense(layers[-1]))
