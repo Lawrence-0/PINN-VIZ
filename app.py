@@ -296,21 +296,24 @@ def server15():
         conn = sqlite3.connect('./projects/project_' + str(Project_settings['proj_name']) + '/models.db')
         c = conn.cursor()
         models_db = []
-        lst_tnse = []
+        lst_tsne = []
         cursor = c.execute("SELECT MODEL, STRUCTURE, EPOCHS, STEPS_PER_EPOCH, OPTIMIZER, LEARNING_RATE, FINAL_LOSS from MODELS")
         for row in cursor:
             models_db.append([str(x) for x in list(row)])
-            lst_tnse.append([x[:x.index('(')] for x in row[1].split('=>')[1:-1]])
+            lst_tsne.append([x[:x.index('(')] for x in row[1].split('=>')[1:-1]])
         id_len = max([len(x[0]) for x in models_db])
         for i in range(len(models_db)):
             models_db[i][0] = '0' * (id_len - len(models_db[i][0])) + models_db[i][0]
         conn.commit()
         conn.close()
-        depth_max = max([len(x) for x in lst_tnse])
-        lst_tnse = [[0 for _ in range(depth_max - len(x))] + x for x in lst_tnse]
-        lst_tnse = TSNE(n_components=2,random_state=33).fit_transform(lst_tnse).tolist()
-        lst_tnse = [lst_tnse[i] + [float(models_db[i][-1])] for i in range(len(lst_tnse))]
-        return {'data': models_db, 'data2': lst_tnse}
+        if len(lst_tsne) > 1:
+            depth_max = max([len(x) for x in lst_tsne])
+            lst_tsne = [[0 for _ in range(depth_max - len(x))] + x for x in lst_tsne]
+            lst_tsne = TSNE(n_components=2,random_state=33).fit_transform(lst_tsne).tolist()
+            lst_tsne = [lst_tsne[i] + [float(models_db[i][-1])] for i in range(len(lst_tsne))]
+        else:
+            lst_tsne = []
+        return {'data': models_db, 'data2': lst_tsne}
     
 @app.route('/server16', methods=['POST', 'GET'])
 def server16():

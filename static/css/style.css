@@ -912,23 +912,26 @@
 #result_exp {
     position: absolute;
     width: 33%;
-    height: 100%;
     border-left: solid 3px #555590;
     left: 0;
+    top: 3px;
+    bottom: 0;
 }
 #result_std {
     position: absolute;
     width: 33%;
-    height: 100%;
     border-left: solid 3px #555590;
     left: 33%;
+    top: 3px;
+    bottom: 0;
 }
 #result_err {
     position: absolute;
     width: 33%;
-    height: 100%;
     border-left: solid 3px #555590;
     right: 0;
+    top: 3px;
+    bottom: 0;
 }
 #rst_predict {
     position: absolute;

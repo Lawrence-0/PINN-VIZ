@@ -1,0 +1,1 @@
+{"derivative": [["Output1", "InputT"], ["Output1", "InputX"], ["Output1", "InputY"], ["Output1", "InputZ"], ["Derivative2", "InputX"], ["Derivative3", "InputY"], ["Derivative4", "InputZ"]], "equation": ["D1+P1*D2-D5-D6-D7"], "proj_name": "4", "input": "3DwT", "output": "1", "parameter": "1", "weight": ["0.01"]}

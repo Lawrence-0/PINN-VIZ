@@ -71,7 +71,7 @@ function pdct_show_3DwT(container, T, X, Y, Z, U, title_text) {
 
     var layout = {
         showlegend: false,
-        margin: {t:0, l:20, b:110},
+        margin: {t:10, l:10, b:110, r: 10},
         sliders: sliders
     };
 
