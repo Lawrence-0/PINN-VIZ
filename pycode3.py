@@ -47,6 +47,7 @@ def model_pdct(data1, row, ipts, paras, output1):
     wght_bias = []
     for lyr in data1["history"][-1]:
         wght_bias += [np.asarray(lyr[0]), np.asarray(lyr[1])]
+    model.set_weights(wght_bias)
     if len(ipts) == 4:
         pdct_data = np.concatenate((np.transpose(np.mgrid[ipts[0][0]:ipts[0][1]:21j, ipts[1][0]:ipts[1][1]:21j, ipts[2][0]:ipts[2][1]:21j, ipts[3][0]:ipts[3][1]:21j].reshape(4,21**4)), np.tile(paras, (21**4, 1))), axis=1)
         pdct_rst_flat = model.predict(pdct_data).reshape(21*21*21*21)
