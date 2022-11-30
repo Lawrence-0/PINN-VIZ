@@ -582,9 +582,23 @@ $('#rst_predict').click(function() {
         cache: false,
     }).done(function(data) {
         if (data.PDE_type == '3DwT') {
-            pdct_show_3DwT('result_exp', data.T, data.X, data.Y, data.Z, data.U_model, 'PINN Solution');
-            pdct_show_3DwT('result_std', data.T, data.X, data.Y, data.Z, data.U_exact, 'Exact Solution');
+            let Umin = d3.min([d3.min(data.U_model), d3.min(data.U_exact)]);
+            let Umax = d3.max([d3.max(data.U_model), d3.max(data.U_exact)]);
+            pdct_show_3DwT('result_exp', data.T, data.X, data.Y, data.Z, data.U_model, 'PINN Solution', Umax, Umin);
+            pdct_show_3DwT('result_std', data.T, data.X, data.Y, data.Z, data.U_exact, 'Exact Solution', Umax, Umin);
             pdct_show_3DwT('result_err', data.T, data.X, data.Y, data.Z, data.U_error, 'Error');
+            $('#result_error_dist').empty();
+            sel = $('#rst_input option:selected').val().slice(-1);
+            error_show_any('result_error_dist', data['U_error_'+sel][0], data['U_error_'+sel][1], 'Input'+sel)
+            $('#rst_input').change(function() {
+                $('#result_error_dist').empty();
+                sel = $('#rst_input option:selected').val().slice(-1);
+                error_show_any('result_error_dist', data['U_error_'+sel][0], data['U_error_'+sel][1], 'Input'+sel)
+                console.log(data.U_error_T);
+                console.log(data.U_error_X);
+                console.log(data.U_error_Y);
+                console.log(data.U_error_Z);
+            });
         }
     });
 });

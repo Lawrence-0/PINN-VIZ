@@ -1,7 +1,13 @@
-function pdct_show_3DwT(container, T, X, Y, Z, U, title_text) {
+function pdct_show_3DwT(container, T, X, Y, Z, U, title_text, Umax=null, Umin=null) {
     var data = [];
     for (let i=0;i<21;i++) {
         var u_temp = U.slice(i*21*21*21, (i+1)*21*21*21);
+        if (Umax==null) {
+            Umax = d3.max(U);
+        }
+        if (Umin==null) {
+            Umin = d3.min(U);
+        }
         var d_temp = [{
             type: 'isosurface',
             x: X,
@@ -9,8 +15,8 @@ function pdct_show_3DwT(container, T, X, Y, Z, U, title_text) {
             z: Z,
             value: u_temp,
             visible: false,
-            isomin: d3.min(U),
-            isomax: d3.max(U),
+            isomin: Umin,
+            isomax: Umax,
             surface: {show: true, count: 10, fill: 0.3},
             caps: {
                 x: {show: false},
@@ -26,7 +32,7 @@ function pdct_show_3DwT(container, T, X, Y, Z, U, title_text) {
                 len: 1,
                 y: 0.8,
                 x: 0.5,
-                ypad: 3
+                ypad: 0
             },
         }];
         data.push(d_temp);
@@ -57,7 +63,7 @@ function pdct_show_3DwT(container, T, X, Y, Z, U, title_text) {
     };
 
     var sliders = [{
-        pad: {t: 35},
+        pad: {t: 10},
         currentvalue: {
             xanchor: 'right',
             prefix: 'time: ',
@@ -71,7 +77,7 @@ function pdct_show_3DwT(container, T, X, Y, Z, U, title_text) {
 
     var layout = {
         showlegend: false,
-        margin: {t:10, l:10, b:110, r: 10},
+        margin: {t:10, l:10, b:50, r: 10},
         sliders: sliders
     };
 
@@ -79,4 +85,20 @@ function pdct_show_3DwT(container, T, X, Y, Z, U, title_text) {
     for (let i=1; i<data.length; i++) {
         Plotly.addTraces(container, data[i])
     };
+}
+
+function error_show_any(container, x, y, var_name){
+    var trace1 = {
+        x: x,
+        y: y,
+        marker: {color: 'rgb(135,206,250)'},
+        type: 'bar'
+    };
+    var data = [trace1];
+    var layout = {
+        xaxis: {title: var_name}, 
+        yaxis: {title: "mean error"},
+        margin: {l: 0,r: 0,b: 1,t: 1}
+    };
+    Plotly.newPlot(container, data, layout, {displayModeBar: false});
 }

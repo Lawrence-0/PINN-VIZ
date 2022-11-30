@@ -54,16 +54,30 @@ def model_pdct(data1, row, ipts, paras, output1):
         exact_rst_flat = output1(pdct_data).reshape(21*21*21*21)
         error_rst_flat = np.abs(pdct_rst_flat - exact_rst_flat)
         pdct_rst = pdct_rst_flat.reshape(21,21,21,21)
+        exact_rst = exact_rst_flat.reshape(21,21,21,21)
+        error_rst = error_rst_flat.reshape(21,21,21,21)
     elif len(ipts) == 3:
         pdct_data = np.concatenate((np.transpose(np.mgrid[ipts[0][0]:ipts[0][1]:21j, ipts[1][0]:ipts[1][1]:21j, ipts[2][0]:ipts[2][1]:21j].reshape(3,21**3)), np.tile(paras, (21**3, 1))), axis=1)
         pdct_rst_flat = model.predict(pdct_data).reshape(21*21*21)
+        exact_rst_flat = output1(pdct_data).reshape(21*21*21)
+        error_rst_flat = np.abs(pdct_rst_flat - exact_rst_flat)
         pdct_rst = pdct_rst_flat.reshape(21,21,21)
+        exact_rst = exact_rst_flat.reshape(21,21,21)
+        error_rst = error_rst_flat.reshape(21,21,21)
     elif len(ipts) == 2:
         pdct_data = np.concatenate((np.transpose(np.mgrid[ipts[0][0]:ipts[0][1]:21j, ipts[1][0]:ipts[1][1]:21j].reshape(2,21**2)), np.tile(paras, (21**2, 1))), axis=1)
         pdct_rst_flat = model.predict(pdct_data).reshape(21*21)
+        exact_rst_flat = output1(pdct_data).reshape(21*21)
+        error_rst_flat = np.abs(pdct_rst_flat - exact_rst_flat)
         pdct_rst = pdct_rst_flat.reshape(21,21)
+        exact_rst = exact_rst_flat.reshape(21,21)
+        error_rst = error_rst_flat.reshape(21,21)
     elif len(ipts) == 1:
         pdct_data = np.concatenate((np.transpose(np.mgrid[ipts[0][0]:ipts[0][1]:21j].reshape(1,21**1)), np.tile(paras, (21**1, 1))), axis=1)
         pdct_rst_flat = model.predict(pdct_data).reshape(21)
+        exact_rst_flat = output1(pdct_data).reshape(21)
+        error_rst_flat = np.abs(pdct_rst_flat - exact_rst_flat)
         pdct_rst = pdct_rst_flat.reshape(21)
-    return pdct_data, pdct_rst_flat, pdct_rst, exact_rst_flat, error_rst_flat
+        exact_rst = exact_rst_flat.reshape(21)
+        error_rst = error_rst_flat.reshape(21)
+    return pdct_data, pdct_rst_flat, pdct_rst, exact_rst_flat, exact_rst, error_rst_flat, error_rst

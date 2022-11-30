@@ -360,6 +360,6 @@ def server18():
         for r in cursor:
             row = r[0]
         from temp import exa_sol
-        pdct_data, pdct_rst_flat, pdct_rst, exact_rst_flat, error_rst_flat = model_pdct(data1, row, ipts_min_max['ipts_min_max'], paras, exa_sol.output1)
+        pdct_data, pdct_rst_flat, pdct_rst, exact_rst_flat, exact_rst, error_rst_flat, error_rst = model_pdct(data1, row, ipts_min_max['ipts_min_max'], paras, exa_sol.output1)
         if PDE_type['input'] == '3DwT':
-            return {'PDE_type': '3DwT', 'T': pdct_data[::21*21*21, 0].tolist(), 'X': pdct_data[:21*21*21, 1].tolist(), 'Y': pdct_data[:21*21*21, 2].tolist(), 'Z': pdct_data[:21*21*21, 3].tolist(), 'U_model': pdct_rst_flat.tolist(), 'U_exact': exact_rst_flat.tolist(), 'U_error': error_rst_flat.tolist()}
+            return {'PDE_type': '3DwT', 'T': pdct_data[::21*21*21, 0].tolist(), 'X': pdct_data[:21*21*21, 1].tolist(), 'Y': pdct_data[:21*21*21, 2].tolist(), 'Z': pdct_data[:21*21*21, 3].tolist(), 'U_model': pdct_rst_flat.tolist(), 'U_exact': exact_rst_flat.tolist(), 'U_error': error_rst_flat.tolist(), 'U_error_T': [np.mgrid[ipts_min_max['ipts_min_max'][0][0]:ipts_min_max['ipts_min_max'][0][1]:21j].tolist(), np.mean(error_rst, axis=(1,2,3)).tolist()], 'U_error_X': [np.mgrid[ipts_min_max['ipts_min_max'][1][0]:ipts_min_max['ipts_min_max'][1][1]:21j].tolist(), np.mean(error_rst, axis=(0,2,3)).tolist()], 'U_error_Y': [np.mgrid[ipts_min_max['ipts_min_max'][2][0]:ipts_min_max['ipts_min_max'][2][1]:21j].tolist(), np.mean(error_rst, axis=(0,1,3)).tolist()], 'U_error_Z': [np.mgrid[ipts_min_max['ipts_min_max'][3][0]:ipts_min_max['ipts_min_max'][3][1]:21j].tolist(), np.mean(error_rst, axis=(0,1,2)).tolist()]}
