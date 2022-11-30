@@ -17,6 +17,7 @@
         <script src="./static/js/show_csv.js?r={{reload}}"></script>
         <script src="./static/js/mdl2pnt.js?r={{reload}}"></script>
         <script src="./static/js/pdct_show.js?r={{reload}}"></script>
+        <script src="./static/js/nn2mx.js?r={{reload}}"></script>
     </head>
     <body>
         <div class="part_outside" id="control_part">
@@ -281,7 +282,9 @@
                 <div class="module_inside" id="detail_1_container"></div>
             </div>
             <div id="detail_2">
-                <div class="module_inside" id="detail_2_container"></div>
+                <div class="module_inside" id="detail_2_container" style="z-index: 1;"></div>
+                <div class="module_inside" id="detail_2_container_" style="z-index: 0;"></div>
+                <div id="NN_switch" style="z-index: 3;">SWITCH</div>
             </div>
             <div id="detail_3">
                 <div class="module_inside" id="detail_3_container"></div>

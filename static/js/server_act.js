@@ -44,6 +44,15 @@ $("#terminal_switch").click(function() {
     }
 });
 
+$("#NN_switch").click(function() {
+    console.log()
+    if ($("#detail_2_container_").css("z-index") == "0") {
+        $("#detail_2_container_").css("z-index", "2");
+    } else {
+        $("#detail_2_container_").css("z-index", "0");
+    }
+});
+
 var scroll_timer;
 $('#terminal_bttm').mouseover(function() {
     scroll_timer = setInterval(() => {
@@ -559,7 +568,8 @@ $('#load_model_bttn').click(function() {
     }).done(function(data) {
         sliders = detail_slider(d3.select("#detail_1_container"), data["epoch"]);
         network_structure(d3.select("#detail_2_container"), data["data1"], sliders[0]);
-        slider__ = loss_epoch(d3.select("#detail_3_container"), data["data2"], sliders[1]);
+        loss_epoch(d3.select("#detail_3_container"), data["data2"], sliders[1]);
+        nn2mx(d3.select("#detail_2_container_"), data["data1"], sliders[2]);
         $('#para_predict').children('input').prop('disabled', false);
         $('#rst_predict').prop('disabled', false);
         $('#rst_input').prop('disabled', false);
