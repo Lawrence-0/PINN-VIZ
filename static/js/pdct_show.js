@@ -87,6 +87,62 @@ function pdct_show_3DwT(container, T, X, Y, Z, U, title_text, Umax=null, Umin=nu
     };
 }
 
+function pdct_show_3DoT(container, X, Y, Z, U, title_text, Umax=null, Umin=null) {
+    if (Umax==null) {
+        Umax = d3.max(U);
+    }
+    if (Umin==null) {
+        Umin = d3.min(U);
+    }
+    var data = [{
+        type: 'isosurface',
+        x: X,
+        y: Y,
+        z: Z,
+        value: U,
+        visible: true,
+        isomin: Umin,
+        isomax: Umax,
+        surface: {show: true, count: 10, fill: 0.3},
+        caps: {
+            x: {show: false},
+            y: {show: false},
+            z: {show: false},
+        },
+        colorbar: {
+            title: {text: title_text, side: 'bottom'},
+            thickness: 10,
+            tickfont: {size: 10},
+            nticks: 4,
+            orientation: 'h',
+            len: 1,
+            y: 0.8,
+            x: 0.5,
+            ypad: 0
+        },
+    }];
+
+    var config = {
+        showSendToCloud: true,
+        responsive: true,
+        displayModeBar: false,
+        toImageButtonOptions: {
+            format: 'png',
+            filename: 'isosurface',
+            height: 600,
+            width: 650,
+        }
+    };
+
+    var layout = {
+        showlegend: false,
+        margin: {t:10, l:10, b:50, r: 10},
+        sliders: sliders
+    };
+
+    Plotly.newPlot(container, data, layout, config);
+}
+
 function error_show_any(container, x, y, var_name){
     var trace1 = {
         x: x,
