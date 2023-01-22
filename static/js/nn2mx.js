@@ -114,8 +114,6 @@ function nn2mx(container, data, sliderA) {
                 .style("stroke", `rgba(0,0,0,0.5)`);
         }
     }
-    console.log(rect_array);
-    console.log(tria_array);
 
     
 

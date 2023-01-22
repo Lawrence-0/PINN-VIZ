@@ -1,0 +1,1 @@
+{"derivative": [["Output1", "InputX"], ["Output1", "InputY"], ["Derivative1", "InputX"]], "equation": ["D2-1/14*D3+1/2*D1"], "proj_name": "12", "input": "2DwT", "output": "1", "parameter": "1", "weight": ["0.01"]}
