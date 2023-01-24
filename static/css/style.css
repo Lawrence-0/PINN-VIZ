@@ -897,7 +897,7 @@
     position: absolute;
     left: 100px;
     top: 0;
-    height: 45px;
+    height: 30px;
     width: 100px;
     border-right: solid 3px #555590;
     border-bottom: solid 3px #555590;
@@ -905,15 +905,24 @@
 #result_input {
     position: absolute;
     left: 100px;
-    top: 45px;
-    height: 35px;
-    width: 100px;
+    top: 30px;
+    height: 26px;
+    width: 97px;
     border-left: solid 3px #555590;
     border-bottom: solid 3px #555590;
 }
+#result_output {
+    position: absolute;
+    left: 100px;
+    top: 56px;
+    height: 26px;
+    width: 97px;
+    border-left: solid 3px #555590;
+    border-right: solid 3px #555590;
+}
 #result_error_dist {
     position: absolute;
-    left: 200px;
+    left: 203px;
     top: 0;
     right: 0;
     height: 80px;
@@ -952,17 +961,26 @@
 }
 #rst_predict {
     position: absolute;
-    left: 7px;
-    top: 7px;
-    right: 7px;
-    bottom: 7px;
+    left: 2px;
+    top: 2px;
+    right: 2px;
+    bottom: 2px;
 }
 #rst_input {
     position: absolute;
-    left: 7px;
-    top: 10px;
-    right: 7px;
-    bottom: 7px;
+    left: 2px;
+    top: 5px;
+    right: 2px;
+    bottom: 2px;
+    text-align: center;
+    text-align-last: center;
+}
+#rst_output {
+    position: absolute;
+    left: 2px;
+    top: 5px;
+    right: 2px;
+    bottom: 2px;
     text-align: center;
     text-align-last: center;
 }

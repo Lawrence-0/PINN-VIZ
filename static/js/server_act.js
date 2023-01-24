@@ -268,6 +268,10 @@ $("#select_PDE_output").change(function(){
     new_elems.forEach(function(d) {
         sel_tmp.append($('<option>').attr('value', d).text(d));
     });
+    $("#rst_output").empty();
+    new_elems.forEach(function(d) {
+        $("#rst_output").append($('<option>').attr('value', d).text(d));
+    });
     $.ajax({
         url:"/server4?output=" + String(this.value),
         type:'post',
@@ -576,6 +580,7 @@ $('#load_model_bttn').click(function() {
         $('#para_predict').children('input').prop('disabled', false);
         $('#rst_predict').prop('disabled', false);
         $('#rst_input').prop('disabled', false);
+        $('#rst_output').prop('disabled', false);
     });
 });
 
@@ -597,23 +602,41 @@ $('#rst_predict').click(function() {
         if (data.PDE_type == '3DwT') {
             let Umin = d3.min([d3.min(data.U_model), d3.min(data.U_exact)]);
             let Umax = d3.max([d3.max(data.U_model), d3.max(data.U_exact)]);
-            pdct_show_3DwT('result_exp', data.T, data.X, data.Y, data.Z, data.U_model, 'PINN Solution', Umax, Umin);
-            pdct_show_3DwT('result_std', data.T, data.X, data.Y, data.Z, data.U_exact, 'Exact Solution', Umax, Umin);
-            pdct_show_3DwT('result_err', data.T, data.X, data.Y, data.Z, data.U_error, 'Error');
+            pdct_show_3DwT('result_exp', data.T, data.X, data.Y, data.Z, data.U_model[0], 'PINN Solution', Umax, Umin);
+            pdct_show_3DwT('result_std', data.T, data.X, data.Y, data.Z, data.U_exact[0], 'Exact Solution', Umax, Umin);
+            pdct_show_3DwT('result_err', data.T, data.X, data.Y, data.Z, data.U_error[0], 'Error');
+            $('#rst_output').change(function() {
+                $('#result_exp').empty();
+                $('#result_std').empty();
+                $('#result_err').empty();
+                sel_ = parseInt($('#rst_output option:selected').val().slice(6,)-1);
+                pdct_show_3DwT('result_exp', data.T, data.X, data.Y, data.Z, data.U_model[sel_], 'PINN Solution', Umax, Umin);
+                pdct_show_3DwT('result_std', data.T, data.X, data.Y, data.Z, data.U_exact[sel_], 'Exact Solution', Umax, Umin);
+                pdct_show_3DwT('result_err', data.T, data.X, data.Y, data.Z, data.U_error[sel_], 'Error');
+            });
             $('#result_error_dist').empty();
             sel = $('#rst_input option:selected').val().slice(-1);
-            error_show_any('result_error_dist', data['U_error_'+sel][0], data['U_error_'+sel][1], 'Input'+sel)
+            error_show_any('result_error_dist', data['U_error_'+sel][0], data['U_error_'+sel][1], 'Input'+sel);
             $('#rst_input').change(function() {
                 $('#result_error_dist').empty();
                 sel = $('#rst_input option:selected').val().slice(-1);
-                error_show_any('result_error_dist', data['U_error_'+sel][0], data['U_error_'+sel][1], 'Input'+sel)
+                error_show_any('result_error_dist', data['U_error_'+sel][0], data['U_error_'+sel][1], 'Input'+sel);
             });
         } else if (data.PDE_type == '3DoT') {
             let Umin = d3.min([d3.min(data.U_model), d3.min(data.U_exact)]);
             let Umax = d3.max([d3.max(data.U_model), d3.max(data.U_exact)]);
-            pdct_show_3DoT('result_exp', data.X, data.Y, data.Z, data.U_model, 'PINN Solution', Umax, Umin);
-            pdct_show_3DoT('result_std', data.X, data.Y, data.Z, data.U_exact, 'Exact Solution', Umax, Umin);
-            pdct_show_3DoT('result_err', data.X, data.Y, data.Z, data.U_error, 'Error');
+            pdct_show_3DoT('result_exp', data.X, data.Y, data.Z, data.U_model[0], 'PINN Solution', Umax, Umin);
+            pdct_show_3DoT('result_std', data.X, data.Y, data.Z, data.U_exact[0], 'Exact Solution', Umax, Umin);
+            pdct_show_3DoT('result_err', data.X, data.Y, data.Z, data.U_error[0], 'Error');
+            $('#rst_output').change(function() {
+                $('#result_exp').empty();
+                $('#result_std').empty();
+                $('#result_err').empty();
+                sel_ = parseInt($('#rst_output option:selected').val().slice(6,)-1);
+                pdct_show_3DoT('result_exp', data.X, data.Y, data.Z, data.U_model[sel_], 'PINN Solution', Umax, Umin);
+                pdct_show_3DoT('result_std', data.X, data.Y, data.Z, data.U_exact[sel_], 'Exact Solution', Umax, Umin);
+                pdct_show_3DoT('result_err', data.X, data.Y, data.Z, data.U_error[sel_], 'Error');
+            });
             $('#result_error_dist').empty();
             sel = $('#rst_input option:selected').val().slice(-1);
             error_show_any('result_error_dist', data['U_error_'+sel][0], data['U_error_'+sel][1], 'Input'+sel)
@@ -625,9 +648,18 @@ $('#rst_predict').click(function() {
         } else if (data.PDE_type == '2DwT') {
             let Umin = d3.min([d3.min(data.U_model.flat().flat()), d3.min(data.U_exact.flat().flat())]);
             let Umax = d3.max([d3.max(data.U_model.flat().flat()), d3.max(data.U_exact.flat().flat())]);
-            pdct_show_2DwT('result_exp', data.T, data.X, data.Y, data.U_model, 'PINN Solution', Umax, Umin);
-            pdct_show_2DwT('result_std', data.T, data.X, data.Y, data.U_exact, 'Exact Solution', Umax, Umin);
-            pdct_show_2DwT('result_err', data.T, data.X, data.Y, data.U_error, 'Error');
+            pdct_show_2DwT('result_exp', data.T, data.X, data.Y, data.U_model[0], 'PINN Solution', Umax, Umin);
+            pdct_show_2DwT('result_std', data.T, data.X, data.Y, data.U_exact[0], 'Exact Solution', Umax, Umin);
+            pdct_show_2DwT('result_err', data.T, data.X, data.Y, data.U_error[0], 'Error');
+            $('#rst_output').change(function() {
+                $('#result_exp').empty();
+                $('#result_std').empty();
+                $('#result_err').empty();
+                sel_ = parseInt($('#rst_output option:selected').val().slice(6,)-1);
+                pdct_show_2DwT('result_exp', data.T, data.X, data.Y, data.U_model[sel_], 'PINN Solution', Umax, Umin);
+                pdct_show_2DwT('result_std', data.T, data.X, data.Y, data.U_exact[sel_], 'Exact Solution', Umax, Umin);
+                pdct_show_2DwT('result_err', data.T, data.X, data.Y, data.U_error[sel_], 'Error');
+            });
             $('#result_error_dist').empty();
             sel = $('#rst_input option:selected').val().slice(-1);
             error_show_any('result_error_dist', data['U_error_'+sel][0], data['U_error_'+sel][1], 'Input'+sel)
@@ -639,9 +671,18 @@ $('#rst_predict').click(function() {
         } else if (data.PDE_type == '2DoT') {
             let Umin = d3.min([d3.min(data.U_model.flat().flat()), d3.min(data.U_exact.flat().flat())]);
             let Umax = d3.max([d3.max(data.U_model.flat().flat()), d3.max(data.U_exact.flat().flat())]);
-            pdct_show_2DoT('result_exp', data.X, data.Y, data.U_model, 'PINN Solution', Umax, Umin);
-            pdct_show_2DoT('result_std', data.X, data.Y, data.U_exact, 'Exact Solution', Umax, Umin);
-            pdct_show_2DoT('result_err', data.X, data.Y, data.U_error, 'Error');
+            pdct_show_2DoT('result_exp', data.X, data.Y, data.U_model[0], 'PINN Solution', Umax, Umin);
+            pdct_show_2DoT('result_std', data.X, data.Y, data.U_exact[0], 'Exact Solution', Umax, Umin);
+            pdct_show_2DoT('result_err', data.X, data.Y, data.U_error[0], 'Error');
+            $('#rst_output').change(function() {
+                $('#result_exp').empty();
+                $('#result_std').empty();
+                $('#result_err').empty();
+                sel_ = parseInt($('#rst_output option:selected').val().slice(6,)-1);
+                pdct_show_2DoT('result_exp', data.X, data.Y, data.U_model[sel_], 'PINN Solution', Umax, Umin);
+                pdct_show_2DoT('result_std', data.X, data.Y, data.U_exact[sel_], 'Exact Solution', Umax, Umin);
+                pdct_show_2DoT('result_err', data.X, data.Y, data.U_error[sel_], 'Error');
+            });
             $('#result_error_dist').empty();
             sel = $('#rst_input option:selected').val().slice(-1);
             error_show_any('result_error_dist', data['U_error_'+sel][0], data['U_error_'+sel][1], 'Input'+sel)
@@ -653,9 +694,18 @@ $('#rst_predict').click(function() {
         } else if (data.PDE_type == '1DwT') {
             let Umin = d3.min([d3.min(data.U_model.flat().flat()), d3.min(data.U_exact.flat().flat())]);
             let Umax = d3.max([d3.max(data.U_model.flat().flat()), d3.max(data.U_exact.flat().flat())]);
-            pdct_show_1DwT('result_exp', data.T, data.X, data.U_model, 'PINN Solution', Umax, Umin);
-            pdct_show_1DwT('result_std', data.T, data.X, data.U_exact, 'Exact Solution', Umax, Umin);
-            pdct_show_1DwT('result_err', data.T, data.X, data.U_error, 'Error');
+            pdct_show_1DwT('result_exp', data.T, data.X, data.U_model[0], 'PINN Solution', Umax, Umin);
+            pdct_show_1DwT('result_std', data.T, data.X, data.U_exact[0], 'Exact Solution', Umax, Umin);
+            pdct_show_1DwT('result_err', data.T, data.X, data.U_error[0], 'Error');
+            $('#rst_output').change(function() {
+                $('#result_exp').empty();
+                $('#result_std').empty();
+                $('#result_err').empty();
+                sel_ = parseInt($('#rst_output option:selected').val().slice(6,)-1);
+                pdct_show_1DwT('result_exp', data.T, data.X, data.U_model[sel_], 'PINN Solution', Umax, Umin);
+                pdct_show_1DwT('result_std', data.T, data.X, data.U_exact[sel_], 'Exact Solution', Umax, Umin);
+                pdct_show_1DwT('result_err', data.T, data.X, data.U_error[sel_], 'Error');
+            });
             $('#result_error_dist').empty();
             sel = $('#rst_input option:selected').val().slice(-1);
             error_show_any('result_error_dist', data['U_error_'+sel][0], data['U_error_'+sel][1], 'Input'+sel)
@@ -667,9 +717,18 @@ $('#rst_predict').click(function() {
         } else if (data.PDE_type == '1DoT') {
             let Umin = d3.min([d3.min(data.U_model.flat().flat()), d3.min(data.U_exact.flat().flat())]);
             let Umax = d3.max([d3.max(data.U_model.flat().flat()), d3.max(data.U_exact.flat().flat())]);
-            pdct_show_1DoT('result_exp', data.X, data.U_model, 'PINN Solution', Umax, Umin);
-            pdct_show_1DoT('result_std', data.X, data.U_exact, 'Exact Solution', Umax, Umin);
-            pdct_show_1DoT('result_err', data.X, data.U_error, 'Error');
+            pdct_show_1DoT('result_exp', data.X, data.U_model[0], 'PINN Solution', Umax, Umin);
+            pdct_show_1DoT('result_std', data.X, data.U_exact[0], 'Exact Solution', Umax, Umin);
+            pdct_show_1DoT('result_err', data.X, data.U_error[0], 'Error');
+            $('#rst_output').change(function() {
+                $('#result_exp').empty();
+                $('#result_std').empty();
+                $('#result_err').empty();
+                sel_ = parseInt($('#rst_output option:selected').val().slice(6,)-1);
+                pdct_show_1DoT('result_exp', data.X, data.U_model[sel_], 'PINN Solution', Umax, Umin);
+                pdct_show_1DoT('result_std', data.X, data.U_exact[sel_], 'Exact Solution', Umax, Umin);
+                pdct_show_1DoT('result_err', data.X, data.U_error[sel_], 'Error');
+            });
             $('#result_error_dist').empty();
             sel = $('#rst_input option:selected').val().slice(-1);
             error_show_any('result_error_dist', data['U_error_'+sel][0], data['U_error_'+sel][1], 'Input'+sel)
