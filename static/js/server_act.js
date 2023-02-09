@@ -29,7 +29,7 @@ $("#terminal_switch").click(function() {
                 }
             }, 10);
         });
-        $("#equation_show").css("display", "none");
+        $("#database_show").css("display", "none");
         $("#terminal_view").css("display", "block");
         $("#terminal_bttm").css("display", "block");
         $("#terminal_pause").css("display", "block");
@@ -38,9 +38,17 @@ $("#terminal_switch").click(function() {
         $("#terminal_view").css("display", "none");
         $("#terminal_bttm").css("display", "none");
         $("#terminal_pause").css("display", "none");
-        $("#equation_show").css("display", "block");
+        $("#database_show").css("display", "block");
         clearInterval(log_interval);
         log_play = false;
+    }
+});
+
+$("#NN_switch").click(function() {
+    if ($("#detail_2_container_").css("z-index") == "0") {
+        $("#detail_2_container_").css("z-index", "2");
+    } else {
+        $("#detail_2_container_").css("z-index", "0");
     }
 });
 
@@ -158,13 +166,16 @@ $('#analyze_csv').click(function() {
         method: 'post',
         success: function(data) {
             $("#control_2_block_3").empty();
-            console.log('step1')
+            for (i=1;i<data.para_min_max.length+1;i++) {
+                $('#para_pdt' + String(i)).prop('min', data.para_min_max[i-1][0]);
+                $('#para_pdt' + String(i)).val(data.para_min_max[i-1][0]);
+                $('#para_pdt' + String(i)).prop('max', data.para_min_max[i-1][1]);
+            }
             if (data.in_type=='1DoT' || data.in_type=='1DwT') {
                 show_csv_1d("control_2_block_3", data.rows);
             } else if (data.in_type=='2DoT' || data.in_type=='2DwT') {
                 show_csv_2d("control_2_block_3", data.rows_smp);
             } else if (data.in_type=='3DoT' || data.in_type=='3DwT') {
-                console.log('step2')
                 show_csv_3d("control_2_block_3", data.rows_smp);
             }
             let sel_tmp = $('#select_csv_show');
@@ -221,6 +232,10 @@ $("#select_PDE_input").change(function(){
     new_elems.forEach(function(d) {
         sel_tmp.append($('<option>').attr('value', d).text(d));
     });
+    $("#rst_input").empty();
+    new_elems.forEach(function(d) {
+        $("#rst_input").append($('<option>').attr('value', d).text(d));
+    });
     $.ajax({
         url:"/server4?input=" + sel,
         type:'post',
@@ -253,6 +268,10 @@ $("#select_PDE_output").change(function(){
     new_elems.forEach(function(d) {
         sel_tmp.append($('<option>').attr('value', d).text(d));
     });
+    $("#rst_output").empty();
+    new_elems.forEach(function(d) {
+        $("#rst_output").append($('<option>').attr('value', d).text(d));
+    });
     $.ajax({
         url:"/server4?output=" + String(this.value),
         type:'post',
@@ -274,9 +293,12 @@ $("#select_PDE_parameter").change(function(){
     $('#load_proj_bttn').prop('disabled', true);
     $("#control_1_subblock_32").empty();
     $("#control_4_block_3").empty();
+    $("#para_predict").empty();
     for (let i=1;i<=this.value;i++) {
         $('<div class="elems">Parameter' + String(i) + '</div>').appendTo($("#control_1_subblock_32"));
         $('<div class="sht_elems">P' + String(i) + '</div>').appendTo($("#control_4_block_3"));
+        $('<span>Parameter' + String(i) + '</span>').appendTo($("#para_predict"));
+        $('<input type="number" id="para_pdt' + String(i) + '" style="width: 90%;" disabled>').appendTo($("#para_predict"));
     }
     $.ajax({
         url:"/server4?parameter=" + String(this.value),
@@ -509,7 +531,6 @@ $("#load_proj_bttn").click(function() {
             wait_proj_timer = setInterval(() => {
                 if ($('#PDE' + String(i+1) + '_w_num').val()) {
                     clearInterval(wait_proj_timer);
-                    console.log($('#PDE' + String(i+1) + '_w_num').val())
                     $('#PDE' + String(i+1) + '_w_num').val(d);
                 }
             }, 100);
@@ -550,8 +571,173 @@ $('#load_model_bttn').click(function() {
     }).done(function(data) {
         sliders = detail_slider(d3.select("#detail_1_container"), data["epoch"]);
         network_structure(d3.select("#detail_2_container"), data["data1"], sliders[0]);
-        slider__ = loss_epoch(d3.select("#detail_3_container"), data["data2"], sliders[1]);
-        console.log(slider__);
+        loss_epoch(d3.select("#detail_3_container"), data["data2"], sliders[1]);
+        nn2mx(d3.select("#detail_2_container_"), data["data1"], sliders[2]);
+        d3.select("#result_error_dist").select("div").remove();
+        d3.select("#result_exp").select("div").remove();
+        d3.select("#result_std").select("div").remove();
+        d3.select("#result_err").select("div").remove();
+        $('#para_predict').children('input').prop('disabled', false);
+        $('#rst_predict').prop('disabled', false);
+        $('#rst_input').prop('disabled', false);
+        $('#rst_output').prop('disabled', false);
+    });
+});
+
+$('#rst_predict').click(function() {
+    let fd = new FormData();
+    let paras = Array();
+    for (let i=1;i<parseInt($('#select_PDE_parameter').val())+1;i++) {
+        paras.push(parseFloat($('#para_pdt'+String(i)).val()));
+    }
+    fd.append('paras', paras);
+    fd.append('model_id', $("#load_model_slct option:selected").val());
+    $.ajax('/server18', {
+        type: 'post',
+        data: fd,
+        processData: false,
+        contentType: false,
+        cache: false,
+    }).done(function(data) {
+        if (data.PDE_type == '3DwT') {
+            let Umin = d3.min([d3.min(data.U_model), d3.min(data.U_exact)]);
+            let Umax = d3.max([d3.max(data.U_model), d3.max(data.U_exact)]);
+            pdct_show_3DwT('result_exp', data.T, data.X, data.Y, data.Z, data.U_model[0], 'PINN Solution', Umax, Umin);
+            pdct_show_3DwT('result_std', data.T, data.X, data.Y, data.Z, data.U_exact[0], 'Exact Solution', Umax, Umin);
+            pdct_show_3DwT('result_err', data.T, data.X, data.Y, data.Z, data.U_error[0], 'Error');
+            $('#rst_output').change(function() {
+                $('#result_exp').empty();
+                $('#result_std').empty();
+                $('#result_err').empty();
+                sel_ = parseInt($('#rst_output option:selected').val().slice(6,)-1);
+                pdct_show_3DwT('result_exp', data.T, data.X, data.Y, data.Z, data.U_model[sel_], 'PINN Solution', Umax, Umin);
+                pdct_show_3DwT('result_std', data.T, data.X, data.Y, data.Z, data.U_exact[sel_], 'Exact Solution', Umax, Umin);
+                pdct_show_3DwT('result_err', data.T, data.X, data.Y, data.Z, data.U_error[sel_], 'Error');
+            });
+            $('#result_error_dist').empty();
+            sel = $('#rst_input option:selected').val().slice(-1);
+            error_show_any('result_error_dist', data['U_error_'+sel][0], data['U_error_'+sel][1], 'Input'+sel);
+            $('#rst_input').change(function() {
+                $('#result_error_dist').empty();
+                sel = $('#rst_input option:selected').val().slice(-1);
+                error_show_any('result_error_dist', data['U_error_'+sel][0], data['U_error_'+sel][1], 'Input'+sel);
+            });
+        } else if (data.PDE_type == '3DoT') {
+            let Umin = d3.min([d3.min(data.U_model), d3.min(data.U_exact)]);
+            let Umax = d3.max([d3.max(data.U_model), d3.max(data.U_exact)]);
+            pdct_show_3DoT('result_exp', data.X, data.Y, data.Z, data.U_model[0], 'PINN Solution', Umax, Umin);
+            pdct_show_3DoT('result_std', data.X, data.Y, data.Z, data.U_exact[0], 'Exact Solution', Umax, Umin);
+            pdct_show_3DoT('result_err', data.X, data.Y, data.Z, data.U_error[0], 'Error');
+            $('#rst_output').change(function() {
+                $('#result_exp').empty();
+                $('#result_std').empty();
+                $('#result_err').empty();
+                sel_ = parseInt($('#rst_output option:selected').val().slice(6,)-1);
+                pdct_show_3DoT('result_exp', data.X, data.Y, data.Z, data.U_model[sel_], 'PINN Solution', Umax, Umin);
+                pdct_show_3DoT('result_std', data.X, data.Y, data.Z, data.U_exact[sel_], 'Exact Solution', Umax, Umin);
+                pdct_show_3DoT('result_err', data.X, data.Y, data.Z, data.U_error[sel_], 'Error');
+            });
+            $('#result_error_dist').empty();
+            sel = $('#rst_input option:selected').val().slice(-1);
+            error_show_any('result_error_dist', data['U_error_'+sel][0], data['U_error_'+sel][1], 'Input'+sel)
+            $('#rst_input').change(function() {
+                $('#result_error_dist').empty();
+                sel = $('#rst_input option:selected').val().slice(-1);
+                error_show_any('result_error_dist', data['U_error_'+sel][0], data['U_error_'+sel][1], 'Input'+sel)
+            });
+        } else if (data.PDE_type == '2DwT') {
+            let Umin = d3.min([d3.min(data.U_model.flat().flat()), d3.min(data.U_exact.flat().flat())]);
+            let Umax = d3.max([d3.max(data.U_model.flat().flat()), d3.max(data.U_exact.flat().flat())]);
+            pdct_show_2DwT('result_exp', data.T, data.X, data.Y, data.U_model[0], 'PINN Solution', Umax, Umin);
+            pdct_show_2DwT('result_std', data.T, data.X, data.Y, data.U_exact[0], 'Exact Solution', Umax, Umin);
+            pdct_show_2DwT('result_err', data.T, data.X, data.Y, data.U_error[0], 'Error');
+            $('#rst_output').change(function() {
+                $('#result_exp').empty();
+                $('#result_std').empty();
+                $('#result_err').empty();
+                sel_ = parseInt($('#rst_output option:selected').val().slice(6,)-1);
+                pdct_show_2DwT('result_exp', data.T, data.X, data.Y, data.U_model[sel_], 'PINN Solution', Umax, Umin);
+                pdct_show_2DwT('result_std', data.T, data.X, data.Y, data.U_exact[sel_], 'Exact Solution', Umax, Umin);
+                pdct_show_2DwT('result_err', data.T, data.X, data.Y, data.U_error[sel_], 'Error');
+            });
+            $('#result_error_dist').empty();
+            sel = $('#rst_input option:selected').val().slice(-1);
+            error_show_any('result_error_dist', data['U_error_'+sel][0], data['U_error_'+sel][1], 'Input'+sel)
+            $('#rst_input').change(function() {
+                $('#result_error_dist').empty();
+                sel = $('#rst_input option:selected').val().slice(-1);
+                error_show_any('result_error_dist', data['U_error_'+sel][0], data['U_error_'+sel][1], 'Input'+sel)
+            });
+        } else if (data.PDE_type == '2DoT') {
+            let Umin = d3.min([d3.min(data.U_model.flat().flat()), d3.min(data.U_exact.flat().flat())]);
+            let Umax = d3.max([d3.max(data.U_model.flat().flat()), d3.max(data.U_exact.flat().flat())]);
+            pdct_show_2DoT('result_exp', data.X, data.Y, data.U_model[0], 'PINN Solution', Umax, Umin);
+            pdct_show_2DoT('result_std', data.X, data.Y, data.U_exact[0], 'Exact Solution', Umax, Umin);
+            pdct_show_2DoT('result_err', data.X, data.Y, data.U_error[0], 'Error');
+            $('#rst_output').change(function() {
+                $('#result_exp').empty();
+                $('#result_std').empty();
+                $('#result_err').empty();
+                sel_ = parseInt($('#rst_output option:selected').val().slice(6,)-1);
+                pdct_show_2DoT('result_exp', data.X, data.Y, data.U_model[sel_], 'PINN Solution', Umax, Umin);
+                pdct_show_2DoT('result_std', data.X, data.Y, data.U_exact[sel_], 'Exact Solution', Umax, Umin);
+                pdct_show_2DoT('result_err', data.X, data.Y, data.U_error[sel_], 'Error');
+            });
+            $('#result_error_dist').empty();
+            sel = $('#rst_input option:selected').val().slice(-1);
+            error_show_any('result_error_dist', data['U_error_'+sel][0], data['U_error_'+sel][1], 'Input'+sel)
+            $('#rst_input').change(function() {
+                $('#result_error_dist').empty();
+                sel = $('#rst_input option:selected').val().slice(-1);
+                error_show_any('result_error_dist', data['U_error_'+sel][0], data['U_error_'+sel][1], 'Input'+sel)
+            });
+        } else if (data.PDE_type == '1DwT') {
+            let Umin = d3.min([d3.min(data.U_model.flat().flat()), d3.min(data.U_exact.flat().flat())]);
+            let Umax = d3.max([d3.max(data.U_model.flat().flat()), d3.max(data.U_exact.flat().flat())]);
+            pdct_show_1DwT('result_exp', data.T, data.X, data.U_model[0], 'PINN Solution', Umax, Umin);
+            pdct_show_1DwT('result_std', data.T, data.X, data.U_exact[0], 'Exact Solution', Umax, Umin);
+            pdct_show_1DwT('result_err', data.T, data.X, data.U_error[0], 'Error');
+            $('#rst_output').change(function() {
+                $('#result_exp').empty();
+                $('#result_std').empty();
+                $('#result_err').empty();
+                sel_ = parseInt($('#rst_output option:selected').val().slice(6,)-1);
+                pdct_show_1DwT('result_exp', data.T, data.X, data.U_model[sel_], 'PINN Solution', Umax, Umin);
+                pdct_show_1DwT('result_std', data.T, data.X, data.U_exact[sel_], 'Exact Solution', Umax, Umin);
+                pdct_show_1DwT('result_err', data.T, data.X, data.U_error[sel_], 'Error');
+            });
+            $('#result_error_dist').empty();
+            sel = $('#rst_input option:selected').val().slice(-1);
+            error_show_any('result_error_dist', data['U_error_'+sel][0], data['U_error_'+sel][1], 'Input'+sel)
+            $('#rst_input').change(function() {
+                $('#result_error_dist').empty();
+                sel = $('#rst_input option:selected').val().slice(-1);
+                error_show_any('result_error_dist', data['U_error_'+sel][0], data['U_error_'+sel][1], 'Input'+sel)
+            });
+        } else if (data.PDE_type == '1DoT') {
+            let Umin = d3.min([d3.min(data.U_model.flat().flat()), d3.min(data.U_exact.flat().flat())]);
+            let Umax = d3.max([d3.max(data.U_model.flat().flat()), d3.max(data.U_exact.flat().flat())]);
+            pdct_show_1DoT('result_exp', data.X, data.U_model[0], 'PINN Solution', Umax, Umin);
+            pdct_show_1DoT('result_std', data.X, data.U_exact[0], 'Exact Solution', Umax, Umin);
+            pdct_show_1DoT('result_err', data.X, data.U_error[0], 'Error');
+            $('#rst_output').change(function() {
+                $('#result_exp').empty();
+                $('#result_std').empty();
+                $('#result_err').empty();
+                sel_ = parseInt($('#rst_output option:selected').val().slice(6,)-1);
+                pdct_show_1DoT('result_exp', data.X, data.U_model[sel_], 'PINN Solution', Umax, Umin);
+                pdct_show_1DoT('result_std', data.X, data.U_exact[sel_], 'Exact Solution', Umax, Umin);
+                pdct_show_1DoT('result_err', data.X, data.U_error[sel_], 'Error');
+            });
+            $('#result_error_dist').empty();
+            sel = $('#rst_input option:selected').val().slice(-1);
+            error_show_any('result_error_dist', data['U_error_'+sel][0], data['U_error_'+sel][1], 'Input'+sel)
+            $('#rst_input').change(function() {
+                $('#result_error_dist').empty();
+                sel = $('#rst_input option:selected').val().slice(-1);
+                error_show_any('result_error_dist', data['U_error_'+sel][0], data['U_error_'+sel][1], 'Input'+sel)
+            });
+        }
     });
 });
 
@@ -577,7 +763,7 @@ $.ajax('/server14', {
 
 
 
-
+var tsne_pnts;
 
 function refresh_mdl_db() {
     $.ajax('/server15', {
@@ -626,7 +812,7 @@ function refresh_mdl_db() {
                         contentType: false,
                         cache: false,
                     }).done(function(data) {
-                        parallel_line(d3.select("#overview_3_container"), data['data']);
+                        parallel_line(d3.select("#overview_3_container"), data, tsne_pnts);
                     });
                 } else {
                     let fd = new FormData();
@@ -639,7 +825,7 @@ function refresh_mdl_db() {
                         contentType: false,
                         cache: false,
                     }).done(function(data) {
-                        parallel_line(d3.select("#overview_3_container"), data['data']);
+                        parallel_line(d3.select("#overview_3_container"), data, tsne_pnts);
                     });
                 }
             });
@@ -648,8 +834,8 @@ function refresh_mdl_db() {
         data.forEach(d => {
             $("#load_model_slct").append($('<option>').attr('value', String(parseInt(d[0]))).text('model' + String(parseInt(d[0]))));
         });
-        console.log(data2)
-        mdl2pnt(d3.select('#overview_2_container'), data2);
+        tsne_pnts = mdl2pnt(d3.select('#overview_2_container'), data2);
+        d3.select("#overview_3_container").select("svg").remove();
     });
 }
 
@@ -699,28 +885,3 @@ function sortTable(n) {
         }
     }
 }
-
-
-
-$("#show_overview_3").click(function() {
-    $.ajax({
-        url:"/server1",
-        method: 'post',
-        success: function(data) {
-            parallel_line(d3.select("#overview_3_container"), data);
-        }
-    });
-});
-
-$("#show_detail_2").click(function() {
-    $.ajax({
-        url:"/server2",
-        method: 'post',
-        success: function(data) {
-            sliders = detail_slider(d3.select("#detail_1_container"), data["epoch"]);
-            network_structure(d3.select("#detail_2_container"), data["data1"], sliders[0]);
-            slider__ = loss_epoch(d3.select("#detail_3_container"), data["data2"], sliders[1]);
-            console.log(slider__);
-        }
-    });
-});
