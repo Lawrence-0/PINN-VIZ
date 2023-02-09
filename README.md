@@ -14,6 +14,8 @@ Welcome to Flask: https://flask.palletsprojects.com/en/2.2.x/.
 
 ### Manual
 
+Demo video: https://www.youtube.com/watch?v=cDsAVo_EAo4.
+
 #### Overview of the system
 
 ![](pictures_for_readme/2023-02-09-16-29-35.png)
