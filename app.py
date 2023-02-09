@@ -17,6 +17,7 @@ log_len = 0
 # logging.basicConfig(filename='log.log', level=logging.DEBUG)
 from pycode1 import *
 from pycode2 import *
+from pycode3 import *
 
 app = Flask(__name__)
 
@@ -26,7 +27,7 @@ PDE_type = {'input': '1DoT',
 PDE_vars = {'PDE_vars': None,
             'PDE_equs': [],
             'PDE_wgts': []}
-Hyper_settings = {'layers': [1, 1],
+Hyper_settings = {'layers': [2, 1],
                   'epochs': '1',
                   'steps': '1',
                   'optimizer': 'Adam',
@@ -36,6 +37,7 @@ Project_settings = {'derivative': [],
                     'equation': [],
                     'proj_name': ''}
 Para_Axis = {'model_id': []}
+ipts_min_max = {'ipts_min_max': []}
 
 
 @app.after_request
@@ -52,7 +54,7 @@ def index():
     PDE_type['parameter'] = '1'
     PDE_vars['PDE_equs'] = []
     PDE_vars['PDE_vars'] = None
-    Hyper_settings['layers'] = [1, 1]
+    Hyper_settings['layers'] = [2, 1]
     Hyper_settings['epochs'] = '1'
     Hyper_settings['steps'] = '1'
     Hyper_settings['optimizer'] = 'Adam'
@@ -61,6 +63,8 @@ def index():
     Project_settings['derivative'] = []
     Project_settings['equation'] = []
     Project_settings['proj_name'] = ''
+    Para_Axis['model_id'] = []
+    ipts_min_max['ipts_min_max'] = []
     return render_template("index.html", reload = time.time())
 
 @app.route('/server_log', methods=['POST', 'GET'])
@@ -74,22 +78,7 @@ def server_log():
                 return {"change": "F"}
             
 
-@app.route('/server1', methods=['POST', 'GET'])
-def server1():
-    if request.method == 'POST':
-        with open('./temps/pa.json',"r") as f:
-            data = json.load(f)
-        return jsonify(data)
-    
-@app.route('/server2', methods=['POST', 'GET'])
-def server2():
-    if request.method == 'POST':
-        with open('./temp/data1.json',"r") as f:
-            data1 = json.load(f)
-        with open('./temp/data2.json',"r") as f:
-            data2 = json.load(f)
-        return jsonify({"epoch": int(Hyper_settings['epochs']), "data1": data1, "data2": data2})
-    
+ 
 @app.route('/server3', methods=['POST', 'GET'])
 def server3():
     if request.method == 'POST':
@@ -110,26 +99,27 @@ def server4():
         if request.args.get('parameter'):
             PDE_type['parameter'] = request.args.get('parameter')
         if PDE_type['input'] == '1DoT':
-            Hyper_settings['layers'] = [1, int(PDE_type['output'])]
+            Hyper_settings['layers'] = [1 + int(PDE_type['parameter']), int(PDE_type['output'])]
         elif PDE_type['input'] == '2DoT' or PDE_type['input'] == '1DwT':
-            Hyper_settings['layers'] = [2, int(PDE_type['output'])]
+            Hyper_settings['layers'] = [2 + int(PDE_type['parameter']), int(PDE_type['output'])]
         elif PDE_type['input'] == '3DoT' or PDE_type['input'] == '2DwT':
-            Hyper_settings['layers'] = [3, int(PDE_type['output'])]
+            Hyper_settings['layers'] = [3 + int(PDE_type['parameter']), int(PDE_type['output'])]
         elif PDE_type['input'] == '3DwT':
-            Hyper_settings['layers'] = [4, int(PDE_type['output'])]
+            Hyper_settings['layers'] = [4 + int(PDE_type['parameter']), int(PDE_type['output'])]
         return {'layers': Hyper_settings['layers']}
 
 @app.route('/server5', methods=['POST', 'GET'])
 def server5():
     if request.method == 'POST':
         PDE_vars['PDE_vars'] = PDE_vars_list(PDE_type)
-        rows = pd.read_csv('./temp/data.csv').to_dict('records')
+        df = pd.read_csv('./temp/data.csv')
+        rows = df.to_dict('records')
         if len(rows) > 10000:
             rows_smp = random.sample(rows, 10000)
         else:
             rows_smp = rows
-        print(PDE_type['input'])
-        return jsonify({'vars': PDE_tp2var(PDE_type, varO=False), 'in_type': PDE_type['input'], 'rows': rows, 'rows_smp': rows_smp})
+        ipts_min_max['ipts_min_max'] = [[min(df.loc[:,x]), max(df.loc[:,x])] for x in PDE_tp2var(PDE_type, varO=False, varP=False)]
+        return jsonify({'vars': PDE_tp2var(PDE_type, varO=False), 'in_type': PDE_type['input'], 'rows': rows, 'rows_smp': rows_smp, 'para_min_max': [[min(df.loc[:,x]), max(df.loc[:,x])] for x in PDE_tp2var(PDE_type, varI=False, varO=False)]})
     
 @app.route('/server6', methods=['POST', 'GET'])
 def server6():
@@ -161,7 +151,7 @@ def server8():
         if request.args.get('exa_act') == 'new':
             text = 'import numpy as np\nimport scipy\n'
             for o in range(int(PDE_type['output'])):
-                text += '\ndef output' + str(o+1) + '(x):\n    return 0*x\n'
+                text += '\ndef output' + str(o+1) + '(x):\n    return 0*x[:,0:1]\n'
             with open('./temp/exa_sol.py', 'w') as f:
                 f.write(text)
             return {'isgood': 'good', 'text': text}
@@ -302,22 +292,28 @@ def server14():
 @app.route('/server15', methods=['POST', 'GET'])
 def server15():
     if request.method == 'POST':
+        Para_Axis['model_id'] = []
         conn = sqlite3.connect('./projects/project_' + str(Project_settings['proj_name']) + '/models.db')
         c = conn.cursor()
         models_db = []
-        lst_tnse = []
+        lst_tsne = []
         cursor = c.execute("SELECT MODEL, STRUCTURE, EPOCHS, STEPS_PER_EPOCH, OPTIMIZER, LEARNING_RATE, FINAL_LOSS from MODELS")
         for row in cursor:
             models_db.append([str(x) for x in list(row)])
-            lst_tnse.append([x[:x.index('(')] for x in row[1].split('=>')[1:-1]])
+            lst_tsne.append([x[:x.index('(')] for x in row[1].split('=>')[1:-1]])
         id_len = max([len(x[0]) for x in models_db])
         for i in range(len(models_db)):
             models_db[i][0] = '0' * (id_len - len(models_db[i][0])) + models_db[i][0]
         conn.commit()
         conn.close()
-        lst_tnse = TSNE(n_components=2,random_state=33).fit_transform(lst_tnse).tolist()
-        lst_tnse = [lst_tnse[i] + [float(models_db[i][-1])] for i in range(len(lst_tnse))]
-        return {'data': models_db, 'data2': lst_tnse}
+        if len(lst_tsne) > 1:
+            depth_max = max([len(x) for x in lst_tsne])
+            lst_tsne = [[0 for _ in range(depth_max - len(x))] + x for x in lst_tsne]
+            lst_tsne = TSNE(n_components=2,random_state=33).fit_transform(lst_tsne).tolist()
+            lst_tsne = [lst_tsne[i] + [float(models_db[i][-1])] for i in range(len(lst_tsne))]
+        else:
+            lst_tsne = []
+        return {'data': models_db, 'data2': lst_tsne}
     
 @app.route('/server16', methods=['POST', 'GET'])
 def server16():
@@ -346,4 +342,34 @@ def server17():
                 model_pa.append([int(x[:x.index('(')]) for x in row[1].split('=>')[1:-1]] + [float(row[2])])
         conn.commit()
         conn.close()
-        return {'data': model_pa}
+        return {'data': model_pa, 'id': sorted(Para_Axis['model_id'])}
+
+@app.route('/server18', methods=['POST', 'GET'])
+def server18():
+    if request.method == 'POST':
+        paras = [float(x) for x in request.form.get('paras').split(',')]
+        with open('print.txt', 'w') as f:
+            f.write(str(paras))
+        model_id = request.form.get('model_id')
+        model_path = './projects/project_' + str(Project_settings['proj_name']) + '/model_' + model_id + '/'
+        with open(model_path + 'data1.json',"r") as f:
+            data1 = json.load(f)
+        conn = sqlite3.connect('./projects/project_' + str(Project_settings['proj_name']) + '/models.db')
+        c = conn.cursor()
+        cursor = c.execute("SELECT STRUCTURE from MODELS WHERE MODEL = " + model_id)
+        for r in cursor:
+            row = r[0]
+        from temp import exa_sol
+        pdct_data, pdct_rst_flat, pdct_rst, exact_rst_flat, exact_rst, error_rst_flat, error_rst = model_pdct(data1, row, ipts_min_max['ipts_min_max'], paras, exa_sol.output1)
+        if PDE_type['input'] == '3DwT':
+            return {'PDE_type': '3DwT', 'T': pdct_data[::21*21*21, 0].tolist(), 'X': pdct_data[:21*21*21, 1].tolist(), 'Y': pdct_data[:21*21*21, 2].tolist(), 'Z': pdct_data[:21*21*21, 3].tolist(), 'U_model': np.transpose(pdct_rst_flat,(1,0)).tolist(), 'U_exact': np.transpose(exact_rst_flat,(1,0)).tolist(), 'U_error': np.transpose(error_rst_flat,(1,0)).tolist(), 'U_error_T': [np.mgrid[ipts_min_max['ipts_min_max'][0][0]:ipts_min_max['ipts_min_max'][0][1]:21j].tolist(), np.mean(error_rst, axis=(1,2,3,4)).tolist()], 'U_error_X': [np.mgrid[ipts_min_max['ipts_min_max'][1][0]:ipts_min_max['ipts_min_max'][1][1]:21j].tolist(), np.mean(error_rst, axis=(0,2,3,4)).tolist()], 'U_error_Y': [np.mgrid[ipts_min_max['ipts_min_max'][2][0]:ipts_min_max['ipts_min_max'][2][1]:21j].tolist(), np.mean(error_rst, axis=(0,1,3,4)).tolist()], 'U_error_Z': [np.mgrid[ipts_min_max['ipts_min_max'][3][0]:ipts_min_max['ipts_min_max'][3][1]:21j].tolist(), np.mean(error_rst, axis=(0,1,2,4)).tolist()]}
+        elif PDE_type['input'] == '3DoT':
+            return {'PDE_type': '3DoT', 'X': pdct_data[:, 0].tolist(), 'Y': pdct_data[:, 1].tolist(), 'Z': pdct_data[:, 2].tolist(), 'U_model': np.transpose(pdct_rst_flat,(1,0)).tolist(), 'U_exact': np.transpose(exact_rst_flat,(1,0)).tolist(), 'U_error': np.transpose(error_rst_flat,(1,0)).tolist(), 'U_error_X': [np.mgrid[ipts_min_max['ipts_min_max'][0][0]:ipts_min_max['ipts_min_max'][0][1]:21j].tolist(), np.mean(error_rst, axis=(1,2,3)).tolist()], 'U_error_Y': [np.mgrid[ipts_min_max['ipts_min_max'][1][0]:ipts_min_max['ipts_min_max'][1][1]:21j].tolist(), np.mean(error_rst, axis=(0,2,3)).tolist()], 'U_error_Z': [np.mgrid[ipts_min_max['ipts_min_max'][2][0]:ipts_min_max['ipts_min_max'][2][1]:21j].tolist(), np.mean(error_rst, axis=(0,1,3)).tolist()]}
+        elif PDE_type['input'] == '2DwT':
+            return {'PDE_type': '2DwT', 'T': pdct_data[::21*21, 0].tolist(), 'X': pdct_data[:21*21:21, 1].tolist(), 'Y': pdct_data[:21, 2].tolist(), 'U_model': np.transpose(pdct_rst,(3,0,1,2)).tolist(), 'U_exact': np.transpose(exact_rst,(3,0,1,2)).tolist(), 'U_error': np.transpose(error_rst,(3,0,1,2)).tolist(), 'U_error_T': [np.mgrid[ipts_min_max['ipts_min_max'][0][0]:ipts_min_max['ipts_min_max'][0][1]:21j].tolist(), np.mean(error_rst, axis=(1,2,3)).tolist()], 'U_error_X': [np.mgrid[ipts_min_max['ipts_min_max'][1][0]:ipts_min_max['ipts_min_max'][1][1]:21j].tolist(), np.mean(error_rst, axis=(0,2,3)).tolist()], 'U_error_Y': [np.mgrid[ipts_min_max['ipts_min_max'][2][0]:ipts_min_max['ipts_min_max'][2][1]:21j].tolist(), np.mean(error_rst, axis=(0,1,3)).tolist()]}
+        elif PDE_type['input'] == '2DoT':
+            return {'PDE_type': '2DoT', 'X': pdct_data[::21, 0].tolist(), 'Y': pdct_data[:21, 1].tolist(), 'U_model': np.transpose(pdct_rst,(2,0,1)).tolist(), 'U_exact': np.transpose(exact_rst,(2,0,1)).tolist(), 'U_error': np.transpose(error_rst,(2,0,1)).tolist(), 'U_error_X': [np.mgrid[ipts_min_max['ipts_min_max'][0][0]:ipts_min_max['ipts_min_max'][0][1]:21j].tolist(), np.mean(error_rst, axis=(1,2)).tolist()], 'U_error_Y': [np.mgrid[ipts_min_max['ipts_min_max'][1][0]:ipts_min_max['ipts_min_max'][1][1]:21j].tolist(), np.mean(error_rst, axis=(0,2)).tolist()]}
+        elif PDE_type['input'] == '1DwT':
+            return {'PDE_type': '1DwT', 'T': pdct_data[::21, 0].tolist(), 'X': pdct_data[:21, 1].tolist(), 'U_model': np.transpose(pdct_rst,(2,0,1)).tolist(), 'U_exact': np.transpose(exact_rst,(2,0,1)).tolist(), 'U_error': np.transpose(error_rst,(2,0,1)).tolist(),  'U_error_T': [np.mgrid[ipts_min_max['ipts_min_max'][0][0]:ipts_min_max['ipts_min_max'][0][1]:21j].tolist(), np.mean(error_rst, axis=(1,2)).tolist()], 'U_error_X': [np.mgrid[ipts_min_max['ipts_min_max'][1][0]:ipts_min_max['ipts_min_max'][1][1]:21j].tolist(), np.mean(error_rst, axis=(0,2)).tolist()]}
+        elif PDE_type['input'] == '1DoT':
+            return {'PDE_type': '1DoT', 'X': pdct_data[:, 0].tolist(), 'U_model': np.transpose(pdct_rst,(1,0)).tolist(), 'U_exact': np.transpose(exact_rst,(1,0)).tolist(), 'U_error': np.transpose(error_rst,(1,0)).tolist(),  'U_error_X': [np.mgrid[ipts_min_max['ipts_min_max'][0][0]:ipts_min_max['ipts_min_max'][0][1]:21j].tolist(), np.mean(error_rst, axis=(1,)).tolist()]}

@@ -17,6 +17,7 @@ function detail_slider(container, epochs) {
         .on('onchange', num => {
             g_sliderB.call(sliderB.value(num));
             g_sliderC.call(sliderC.value(num));
+            g_sliderD.call(sliderD.value(num));
         })
     var sliderB = d3.sliderBottom()
         .min(1)
@@ -36,16 +37,27 @@ function detail_slider(container, epochs) {
         .default(1)
         .displayValue(true)
         .fill('rgba(0,0,0,1)')
+    var sliderD = d3.sliderBottom()
+        .min(1)
+        .max(epochs)
+        .step(1)
+        .tickValues([1, epochs])
+        .width(svg_width*0.9)
+        .default(1)
+        .displayValue(true)
+        .fill('rgba(0,0,0,1)')
     var g_sliderB = svg.append('g')
                     .attr('visibility', 'hidden')
                     .call(sliderA);
     var g_sliderC = svg.append('g')
                     .attr('visibility', 'hidden')
                     .call(sliderA);
+    var g_sliderD = svg.append('g')
+                    .attr('visibility', 'hidden')
+                    .call(sliderA);
                     
     var g_sliderA = svg.append('g')
                     .attr('transform', `translate(${svg_width*0.05},8)`)
-                    .attr('id', 'detail_1_slider')
                     .call(sliderA);
 
     var sld_pos = sliderA.value();
@@ -78,5 +90,5 @@ function detail_slider(container, epochs) {
                     .on("click", function(){
                     progress();
                     });
-    return [sliderB, sliderC];
+    return [sliderB, sliderC, sliderD];
 }

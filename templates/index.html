@@ -16,6 +16,8 @@
         <script src="./static/js/parallel_line.js?r={{reload}}"></script>
         <script src="./static/js/show_csv.js?r={{reload}}"></script>
         <script src="./static/js/mdl2pnt.js?r={{reload}}"></script>
+        <script src="./static/js/pdct_show.js?r={{reload}}"></script>
+        <script src="./static/js/nn2mx.js?r={{reload}}"></script>
     </head>
     <body>
         <div class="part_outside" id="control_part">
@@ -148,11 +150,8 @@
                         <button type="button" id="equation_confirm" disabled="true">Confirm</button>
                     </div>
                     <div id="equation_show"></div>
-                    <div id="equation_title_w">Weight</div>
-                    <div id="terminal_switch">SWITCH</div>
-                    <div id="terminal_view"></div>
-                    <div id="terminal_bttm">BOTTOM</div>
-                    <div id="terminal_pause">▶ / ❚❚</div>
+                    <div id="equation_title_w">Coefficient</div>
+                    
                 </div>
             </div>
             <div id="control_6">
@@ -187,7 +186,7 @@
                             <button id="new_layer_add" disabled="true">+</button>
                             <button id="new_layer_sub" disabled="true">-</button>
                             <br>
-                            <div style="height:38px; overflow-y: hidden; overflow-x: scroll; transform: translate(0, 7px);"><span id="layers_span">1=>1</span></div>
+                            <div style="height:38px; overflow-y: hidden; overflow-x: scroll; transform: translate(0, 7px);"><span id="layers_span">2=>1</span></div>
                         </div>
                     </div>
                     <div id="overview_0_block_2">
@@ -262,6 +261,10 @@
                 <div class="module_inside">
                     <div id="database_show"><table id="myTable"><tbody></tbody></table>
                     </div>
+                    <div id="terminal_switch">SWITCH</div>
+                    <div id="terminal_view"></div>
+                    <div id="terminal_bttm">BOTTOM</div>
+                    <div id="terminal_pause">▶ / ❚❚</div>
                 </div>
             </div>
             <div id="overview_2">
@@ -279,13 +282,41 @@
                 <div class="module_inside" id="detail_1_container"></div>
             </div>
             <div id="detail_2">
-                <div class="module_inside" id="detail_2_container"></div>
+                <div class="module_inside" id="detail_2_container" style="z-index: 1;"></div>
+                <div class="module_inside" id="detail_2_container_" style="z-index: 0;"></div>
+                <div id="NN_switch" style="z-index: 3;">SWITCH</div>
             </div>
             <div id="detail_3">
                 <div class="module_inside" id="detail_3_container"></div>
             </div>
             <div id="detail_4">
-                <div class="module_inside"></div>
+                <div class="module_inside" id="detail_4_inside">
+                    <div id="result_parameter">
+                        <div id="para_predict">
+                            <span>Parameter1</span>
+                            <input type="number" id="para_pdt1" style="width: 90%;" disabled>
+                        </div>
+                    </div>
+                    <div id="result_predict">
+                        <button id="rst_predict" type="button" disabled>Predict</button>
+                    </div>
+                    <div id="result_input">
+                        <select id="rst_input" disabled>
+                            <option value='InputX'>InputX</option>
+                        </select>
+                    </div>
+                    <div id="result_output">
+                        <select id="rst_output" disabled>
+                            <option value="Output1">Output1</option>
+                        </select>
+                    </div>
+                    <div id="result_error_dist"></div>
+                    <div id="result_show">
+                        <div class="result_pic" id="result_exp"></div>
+                        <div class="result_pic" id="result_std"></div>
+                        <div class="result_pic" id="result_err"></div>
+                    </div>
+                </div>
             </div>
         </div>
     </body>

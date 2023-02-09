@@ -68,12 +68,14 @@ function network_structure(container, data, sliderA) {
         .range([g_sld_height+(1-(num_neu+1)/(num_neurons+1))*(svg_height-g_sld_height)/2, g_sld_height+(1+(num_neu+1)/(num_neurons+1))*(svg_height-g_sld_height)/2]);
         yScale.push(yscl);
     });
+    
+    var g_all = svg.append("g");
     structure.forEach(function(num_neu, i) {
         var lyr_lks = Array();
         for (let j=1; j<=num_neu; j++) {
             var nod_lks = Array();
             for (let k=1; k<=structure[i+1]; k++) {
-                var link = svg.append("line")
+                var link = g_all.append("line")
                             .attr("x1", xScale(i+1))
                             .attr("y1", yScale[i](j))
                             .attr("x2", xScale(i+2))
@@ -90,7 +92,7 @@ function network_structure(container, data, sliderA) {
         var lyr_nds = Array();
         var bg_nds = Array();
         for (let j=1; j<=num_neu; j++) {
-            var bg_nd = svg.append("circle")
+            var bg_nd = g_all.append("circle")
                         .attr("cx", xScale(i+1))
                         .attr("cy", yScale[i](j))
                         .attr("r", d3.min([xScale.bandwidth(), yScale[i].bandwidth()])/3)
@@ -98,7 +100,7 @@ function network_structure(container, data, sliderA) {
                         .style("stroke-width", d3.min([xScale.bandwidth(), yScale[i].bandwidth()])/30)
                         .style("stroke", `rgba(255,255,255,1)`);
             bg_nds.push(bg_nd);
-            var circle = svg.append("circle")
+            var circle = g_all.append("circle")
                             .attr("cx", xScale(i+1))
                             .attr("cy", yScale[i](j))
                             .attr("r", d3.min([xScale.bandwidth(), yScale[i].bandwidth()])/3)
@@ -156,7 +158,6 @@ function network_structure(container, data, sliderA) {
     var timer;
 
     var g_slider = svg.append('g')
-                    .attr('id', 'detail_1_slider')
                     .attr('transform', `translate(${svg_width*0.05},0)`)
                     .call(slider);
 
@@ -192,15 +193,7 @@ function network_structure(container, data, sliderA) {
                     progress();
                     });
     svg.call(d3.zoom().on("zoom", function(event) {
-        nodes.flat().forEach(function(nd) {
-            nd.attr('transform', event.transform);
-        });
-        links.flat().flat().forEach(function(lk) {
-            lk.attr('transform', event.transform);
-        });
-        bg_nodes.flat().forEach(function(nd) {
-            nd.attr('transform', event.transform);
-        });
+        g_all.attr('transform', event.transform);
     }))
     .on("dblclick.zoom", null);
 
